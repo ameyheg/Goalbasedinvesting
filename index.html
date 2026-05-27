@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinGoal – Goal-Based Investing</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070e1c;--bg2:#0c1830;--bg3:#132040;--bg4:#1a2b53;
+  --border:#1e3058;--border2:#2a4070;
+  --gold:#f5a623;--gold2:#ffc85a;--gold-dim:#f5a62315;
+  --text:#dce8f7;--text2:#7b9cbf;--text3:#3d5580;
+  --green:#0fcf8c;--green-d:#0fcf8c18;
+  --red:#f87171;--red-d:#f8717118;
+  --blue:#60a5fa;--blue-d:#60a5fa15;
+  --purple:#a78bfa;--purple-d:#a78bfa15;
+  --r:14px;--rs:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;line-height:1.6;}
+
+/* HEADER */
+header{background:rgba(12,24,48,0.88);border-bottom:1px solid var(--border);padding:0 2rem;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);}
+.logo{font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;display:flex;align-items:center;gap:8px;}
+.logo-ring{width:28px;height:28px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--gold);}
+.header-tag{font-size:.75rem;color:var(--text3);}
+
+/* MAIN */
+main{max-width:1180px;margin:0 auto;padding:2rem 1.5rem 8rem;}
+.hero{margin-bottom:2rem;}
+.hero h1{font-family:'Sora',sans-serif;font-size:1.7rem;font-weight:700;background:linear-gradient(90deg,var(--text) 60%,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{color:var(--text2);font-size:.9rem;margin-top:4px;}
+
+.rule-banner{background:var(--gold-dim);border:1px solid rgba(245,166,35,.22);border-left:3px solid var(--gold);border-radius:var(--rs);padding:.65rem 1rem;font-size:.8rem;color:var(--text2);margin-bottom:2rem;display:flex;align-items:center;gap:8px;}
+.rule-banner b{color:var(--gold);}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2.5rem;}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem 1.4rem;transition:transform .2s,border-color .2s;position:relative;overflow:hidden;}
+.stat-card::after{content:'';position:absolute;bottom:-20px;right:-20px;width:60px;height:60px;border-radius:50%;background:var(--stat-color,var(--gold));opacity:.06;}
+.stat-card:hover{transform:translateY(-2px);border-color:var(--stat-color,var(--gold));}
+.stat-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text2);margin-bottom:.45rem;}
+.stat-value{font-family:'Sora',sans-serif;font-size:1.55rem;font-weight:700;color:var(--stat-color,var(--gold));line-height:1.1;}
+.stat-sub{font-size:.72rem;color:var(--text3);margin-top:.2rem;}
+
+/* SECTION */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;}
+.section-title{font-family:'Sora',sans-serif;font-size:.95rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;}
+.goal-count{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:1px 10px;font-size:.75rem;color:var(--text2);}
+.btn-add{background:var(--gold);color:#1a0900;border:none;border-radius:var(--rs);padding:.5rem 1.2rem;font-family:'Sora',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;transition:opacity .2s,transform .15s;box-shadow:0 4px 16px rgba(245,166,35,.3);}
+.btn-add:hover{opacity:.88;transform:translateY(-1px);}
+
+/* GOAL GRID */
+.goals-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:1.2rem;}
+.goal-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;transition:transform .2s,border-color .25s,box-shadow .2s;animation:fadeUp .35s ease both;position:relative;overflow:hidden;}
+.goal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,var(--gold));}
+.goal-card:hover{transform:translateY(-3px);border-color:var(--c,var(--gold));box-shadow:0 14px 40px rgba(0,0,0,.35);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.2rem;}
+.card-left{display:flex;align-items:center;gap:10px;}
+.goal-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.goal-name{font-family:'Sora',sans-serif;font-size:.95rem;font-weight:600;}
+.goal-cat{font-size:.72rem;color:var(--text2);}
+.card-actions{display:flex;gap:5px;opacity:0;transition:opacity .18s;}
+.goal-card:hover .card-actions{opacity:1;}
+.btn-ico{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:background .15s,color .15s,border-color .15s;}
+.btn-ico:hover{background:var(--bg3);color:var(--text);}
+.btn-ico.del:hover{background:var(--red-d);color:var(--red);border-color:var(--red);}
+.target-amt{font-family:'Sora',sans-serif;font-size:1.7rem;font-weight:700;line-height:1.1;margin-bottom:.1rem;}
+.target-cv{font-size:.72rem;color:var(--text3);margin-bottom:.1rem;}
+.target-meta{font-size:.72rem;color:var(--text2);margin-bottom:1.1rem;}
+.prog-hdr{display:flex;justify-content:space-between;font-size:.7rem;color:var(--text2);margin-bottom:5px;}
+.prog-bar{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-bottom:1.1rem;}
+.prog-fill{height:100%;border-radius:99px;transition:width .6s ease;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:1rem;}
+.info-cell{background:var(--bg3);border-radius:var(--rs);padding:.7rem .8rem;}
+.ic-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text2);margin-bottom:.2rem;}
+.ic-val{font-family:'Sora',sans-serif;font-size:1rem;font-weight:600;}
+.chips{display:flex;gap:5px;flex-wrap:wrap;}
+.chip{font-size:.67rem;padding:3px 8px;border-radius:4px;font-weight:500;white-space:nowrap;border:1px solid transparent;}
+.chip-short{background:var(--blue-d);color:var(--blue);border-color:rgba(96,165,250,.18);}
+.chip-medium{background:var(--purple-d);color:var(--purple);border-color:rgba(167,139,250,.18);}
+.chip-long{background:var(--green-d);color:var(--green);border-color:rgba(15,207,140,.18);}
+.chip-debt{background:var(--gold-dim);color:var(--gold);border-color:rgba(245,166,35,.18);}
+.chip-equity{background:var(--green-d);color:var(--green);border-color:rgba(15,207,140,.18);}
+.chip-noequity{background:var(--red-d);color:var(--red);border-color:rgba(248,113,113,.18);}
+.on-track{background:var(--green-d);border:1px solid rgba(15,207,140,.2);border-radius:var(--rs);padding:.45rem .75rem;font-size:.78rem;color:var(--green);text-align:center;font-weight:500;}
+.empty{text-align:center;padding:4rem 1rem;display:none;}
+.empty-ico{font-size:2.5rem;opacity:.35;margin-bottom:.8rem;}
+.empty h3{font-family:'Sora',sans-serif;font-size:1rem;color:var(--text2);}
+.empty p{font-size:.83rem;color:var(--text3);}
+
+/* CALCULATOR */
+.calc-section{margin-top:3rem;}
+.calc-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.75rem 2rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;}
+.calc-title{font-family:'Sora',sans-serif;font-size:.95rem;font-weight:600;margin-bottom:1.2rem;}
+.calc-field{margin-bottom:1rem;}
+.calc-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text2);margin-bottom:.4rem;display:block;}
+.calc-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:.65rem 1rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .15s;}
+.calc-input:focus{border-color:var(--gold);}
+.rp-wrap{position:relative;}
+.rp-wrap::before{content:'₹';position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:.85rem;pointer-events:none;}
+.rp-wrap .calc-input{padding-left:1.5rem;}
+.calc-result{background:var(--bg3);border-radius:var(--r);padding:1.5rem;display:flex;flex-direction:column;gap:.75rem;}
+.res-row{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--border);}
+.res-row:last-child{border-bottom:none;}
+.res-label{font-size:.78rem;color:var(--text2);}
+.res-val{font-family:'Sora',sans-serif;font-size:1rem;font-weight:600;}
+.res-val.big{font-size:1.35rem;color:var(--gold);}
+.res-note{background:var(--gold-dim);border:1px solid rgba(245,166,35,.18);border-radius:var(--rs);padding:.6rem .8rem;font-size:.75rem;color:var(--text2);line-height:1.5;}
+.chart-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;margin-top:1.2rem;}
+.chart-title{font-family:'Sora',sans-serif;font-size:.85rem;font-weight:600;margin-bottom:1rem;color:var(--text2);}
+
+/* ═══════════ WIZARD MODAL ═══════════ */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;z-index:200;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s;}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:2rem;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;transform:translateY(18px) scale(.97);transition:transform .25s ease;}
+.overlay.open .modal{transform:translateY(0) scale(1);}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.modal-title{font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;}
+.btn-close{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.btn-close:hover{background:var(--bg3);}
+
+/* Step indicator */
+.wizard-steps{display:flex;align-items:center;margin-bottom:1.75rem;}
+.ws-item{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0;}
+.ws-num{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border2);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:.78rem;font-weight:600;color:var(--text3);transition:all .25s;}
+.ws-label{font-size:.6rem;color:var(--text3);white-space:nowrap;transition:color .25s;text-align:center;}
+.ws-item.ws-active .ws-num{background:var(--gold);border-color:var(--gold);color:#1a0900;}
+.ws-item.ws-active .ws-label{color:var(--gold);}
+.ws-item.ws-done .ws-num{background:var(--green);border-color:var(--green);color:#fff;}
+.ws-item.ws-done .ws-label{color:var(--green);}
+.ws-line{flex:1;height:1.5px;background:var(--border);margin:0 6px;margin-bottom:14px;transition:background .3s;}
+.ws-line.done{background:var(--green);}
+
+/* Wizard panels */
+.wizard-panel{display:none;}
+.wizard-panel.active{display:block;animation:fadeUp .22s ease;}
+.step-hed{margin-bottom:1.25rem;}
+.step-num-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:.2rem;}
+.step-title{font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;}
+.step-desc{font-size:.78rem;color:var(--text2);margin-top:.2rem;}
+
+/* Form reuse */
+.fg{margin-bottom:1.1rem;}
+.fg label{display:block;font-size:.7rem;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text2);margin-bottom:.4rem;}
+.fg input,.fg select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:.7rem 1rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .15s;-webkit-appearance:none;}
+.fg input:focus,.fg select:focus{border-color:var(--gold);}
+.fg select option{background:var(--bg2);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
+.fhint{font-size:.7rem;color:var(--text2);margin-top:.3rem;}
+.fhint.warn{color:var(--gold);}
+.fhint.ok{color:var(--green);}
+.rp-fg{position:relative;}
+.rp-fg::before{content:'₹';position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:.85rem;pointer-events:none;}
+.rp-fg input{padding-left:1.5rem;}
+.w-error{font-size:.75rem;color:var(--red);margin-top:.5rem;display:none;background:var(--red-d);border:1px solid rgba(248,113,113,.2);border-radius:var(--rs);padding:.5rem .75rem;}
+
+/* Step 2 – FV */
+.fv-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem;font-size:.8rem;color:var(--text2);}
+.fv-row b{color:var(--text);}
+.fv-display{background:var(--bg3);border-radius:var(--r);padding:1.25rem;margin:.75rem 0;text-align:center;border:1px solid var(--border);}
+.fv-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text2);margin-bottom:.4rem;}
+.fv-value{font-family:'Sora',sans-serif;font-size:2rem;font-weight:700;color:var(--gold);}
+.fv-sub{font-size:.75rem;color:var(--text2);margin-top:.3rem;}
+.inflation-row{display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:.75rem 1rem;margin-bottom:.75rem;}
+.infl-info b{color:var(--text);font-size:.82rem;}
+.infl-info span{display:block;color:var(--text2);font-size:.7rem;margin-top:.1rem;}
+.infl-right{display:flex;align-items:center;gap:5px;}
+.infl-input{width:68px;background:var(--bg);border:1px solid var(--border2);border-radius:var(--rs);padding:.4rem .5rem;color:var(--gold);font-family:'Sora',sans-serif;font-size:.95rem;font-weight:600;text-align:center;outline:none;}
+.infl-input:focus{border-color:var(--gold);}
+
+/* Step 3 – Strategy */
+.strat-card{border-radius:var(--r);padding:1.25rem;margin-bottom:.85rem;border:1.5px solid;}
+.strat-badge{display:inline-flex;align-items:center;gap:6px;padding:.3rem .9rem;border-radius:4px;font-size:.74rem;font-weight:600;margin-bottom:.65rem;}
+.strat-head{font-family:'Sora',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:.3rem;}
+.strat-rate{font-size:.78rem;color:var(--text2);margin-bottom:.75rem;}
+.instr-list{display:flex;flex-wrap:wrap;gap:5px;}
+.instr-pill{font-size:.7rem;padding:3px 9px;border-radius:4px;background:var(--bg4);color:var(--text2);border:1px solid var(--border);}
+.rule-box{border-radius:var(--rs);padding:.65rem 1rem;font-size:.78rem;line-height:1.6;margin-top:.75rem;}
+.rule-box.no-equity{background:var(--red-d);border:1px solid rgba(248,113,113,.25);color:var(--red);}
+.rule-box.yes-equity{background:var(--green-d);border:1px solid rgba(15,207,140,.25);color:var(--green);}
+
+/* Step 4 – SIP */
+.sip-hero{text-align:center;padding:1.4rem;background:var(--bg3);border-radius:var(--r);margin-bottom:1rem;border:1px solid var(--border);}
+.sip-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text2);margin-bottom:.35rem;}
+.sip-amount{font-family:'Sora',sans-serif;font-size:2.2rem;font-weight:700;color:var(--gold);}
+.sip-sub{font-size:.75rem;color:var(--text2);margin-top:.25rem;}
+.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.85rem;}
+.sum-cell{background:var(--bg3);border-radius:var(--rs);padding:.72rem .85rem;}
+.sum-lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:.2rem;}
+.sum-val{font-family:'Sora',sans-serif;font-size:.95rem;font-weight:600;}
+.journey-strip{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:.7rem 1rem;margin-bottom:.85rem;display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;font-size:.73rem;color:var(--text2);}
+.j-step{color:var(--text);font-weight:500;}
+.j-arr{color:var(--text3);}
+
+/* Wizard nav */
+.wizard-nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.25rem;padding-top:1.1rem;border-top:1px solid var(--border);}
+.btn-wz-back{background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:var(--rs);padding:.6rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;transition:background .15s,color .15s;}
+.btn-wz-back:hover{background:var(--bg3);color:var(--text);}
+.btn-wz-next{background:var(--gold);color:#1a0900;border:none;border-radius:var(--rs);padding:.65rem 1.75rem;font-family:'Sora',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .2s,transform .15s;box-shadow:0 4px 16px rgba(245,166,35,.28);}
+.btn-wz-next:hover{opacity:.88;transform:translateY(-1px);}
+.btn-wz-next.save{background:var(--green);box-shadow:0 4px 16px rgba(15,207,140,.25);color:#fff;}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+
+@media(max-width:640px){
+  .goals-grid{grid-template-columns:1fr;}
+  .frow{grid-template-columns:1fr;}
+  .calc-box{grid-template-columns:1fr;gap:1.5rem;padding:1.25rem 1rem;}
+  main{padding:1.25rem 1rem 7rem;}
+  header{padding:0 1rem;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .stat-value{font-size:1.2rem;}
+  .wizard-steps .ws-label{display:none;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><div class="logo-ring">₹</div>FinGoal</div>
+  <div class="header-tag">Goal-Based Investing Planner</div>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>Your Financial Goals</h1>
+    <p>Every rupee with a purpose. Every goal with a plan.</p>
+  </div>
+
+  <div class="rule-banner">
+    ⚡ <span><b>Golden Rule:</b> Equity investments only for goals &gt; 10 years away. Under 10 years — debt instruments only to protect your corpus.</span>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card" style="--stat-color:var(--gold)">
+      <div class="stat-label">Total Goals</div>
+      <div class="stat-value" id="s-goals">0</div>
+      <div class="stat-sub">active plans</div>
+    </div>
+    <div class="stat-card" style="--stat-color:var(--green)">
+      <div class="stat-label">Monthly SIP Needed</div>
+      <div class="stat-value" id="s-sip">₹0</div>
+      <div class="stat-sub">total across all goals</div>
+    </div>
+    <div class="stat-card" style="--stat-color:var(--blue)">
+      <div class="stat-label">Total Future Corpus</div>
+      <div class="stat-value" id="s-corpus">₹0</div>
+      <div class="stat-sub">inflation-adjusted targets</div>
+    </div>
+    <div class="stat-card" style="--stat-color:var(--purple)">
+      <div class="stat-label">Already Saved</div>
+      <div class="stat-value" id="s-saved">₹0</div>
+      <div class="stat-sub">head start</div>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-title">My Goals <span class="goal-count" id="goal-count">0</span></div>
+    <button class="btn-add" onclick="openModal()">＋ Add Goal</button>
+  </div>
+
+  <div class="goals-grid" id="goals-grid"></div>
+  <div class="empty" id="empty">
+    <div class="empty-ico">🎯</div>
+    <h3>No goals yet</h3>
+    <p>Click "Add Goal" to start your investing journey</p>
+  </div>
+
+
+
+  <!-- SIP Calculator -->
+  <div class="calc-section">
+    <div class="section-header" style="margin-bottom:1rem">
+      <div class="section-title">Quick SIP Calculator</div>
+    </div>
+    <div class="calc-box">
+      <div>
+        <div class="calc-title">Enter Numbers</div>
+        <div class="calc-field">
+          <label class="calc-label">Target Amount</label>
+          <div class="rp-wrap"><input class="calc-input" id="c-target" type="number" placeholder="1500000" min="0" step="10000" oninput="calcUpdate()"></div>
+          <div class="fhint" id="c-target-hint"></div>
+        </div>
+        <div class="calc-field">
+          <label class="calc-label">Years to Goal</label>
+          <input class="calc-input" id="c-years" type="number" placeholder="10" min="1" max="50" oninput="calcUpdate()">
+          <div class="fhint" id="c-years-hint"></div>
+        </div>
+        <div class="calc-field">
+          <label class="calc-label">Current Savings (₹)</label>
+          <div class="rp-wrap"><input class="calc-input" id="c-savings" type="number" placeholder="0" min="0" step="1000" value="0" oninput="calcUpdate()"></div>
+        </div>
+      </div>
+      <div>
+        <div class="calc-title">Your Plan</div>
+        <div class="calc-result" id="c-result">
+          <div style="text-align:center;color:var(--text3);font-size:.82rem;padding:1rem 0;">Enter target amount and years to see your plan</div>
+        </div>
+        <div class="chart-wrap" id="c-chart-wrap" style="display:none">
+          <div class="chart-title">Corpus Projection (₹ Lakhs)</div>
+          <canvas id="c-chart" height="160"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ═══════════ WIZARD MODAL ═══════════ -->
+<div class="overlay" id="overlay" onclick="bgClose(event)">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title" id="m-title">Add New Goal</span>
+      <button class="btn-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <!-- Step indicators -->
+    <div class="wizard-steps">
+      <div class="ws-item ws-active" id="ws-1">
+        <div class="ws-num">1</div>
+        <div class="ws-label">Goal Details</div>
+      </div>
+      <div class="ws-line" id="wl-1"></div>
+      <div class="ws-item" id="ws-2">
+        <div class="ws-num">2</div>
+        <div class="ws-label">Future Value</div>
+      </div>
+      <div class="ws-line" id="wl-2"></div>
+      <div class="ws-item" id="ws-3">
+        <div class="ws-num">3</div>
+        <div class="ws-label">Investment Type</div>
+      </div>
+      <div class="ws-line" id="wl-3"></div>
+      <div class="ws-item" id="ws-4">
+        <div class="ws-num">4</div>
+        <div class="ws-label">SIP Amount</div>
+      </div>
+    </div>
+
+    <!-- Step 1 -->
+    <div id="wp-1" class="wizard-panel active">
+      <div class="step-hed">
+        <div class="step-num-label">Step 1 of 4</div>
+        <div class="step-title">Tell us about your goal</div>
+        <div class="step-desc">What is the goal and what does it cost today?</div>
+      </div>
+      <div class="fg">
+        <label>Goal Name</label>
+        <input id="w-name" type="text" placeholder="e.g. Ananya's College Fees" required maxlength="55">
+      </div>
+      <div class="fg">
+        <label>Category</label>
+        <select id="w-cat" onchange="onCatChange()">
+          <option value="education">🎓  Child's Education</option>
+          <option value="home">🏠  Home Purchase</option>
+          <option value="retirement">🌱  Retirement</option>
+          <option value="marriage">💍  Child's Marriage</option>
+          <option value="travel">✈️  Dream Vacation</option>
+          <option value="vehicle">🚗  Vehicle</option>
+          <option value="business">💼  Business / Startup</option>
+          <option value="other">🎯  Other</option>
+        </select>
+      </div>
+      <div class="frow">
+        <div class="fg">
+          <label>Current Cost in Today's ₹</label>
+          <div class="rp-fg"><input id="w-cv" type="number" placeholder="700000" required min="100" step="1000" oninput="onCVChange()"></div>
+          <div class="fhint" id="w-cv-hint"></div>
+        </div>
+        <div class="fg">
+          <label>Years to Goal</label>
+          <input id="w-years" type="number" placeholder="15" required min="1" max="50">
+        </div>
+      </div>
+      <div class="fg">
+        <label>Current Savings Towards This Goal (₹)</label>
+        <div class="rp-fg"><input id="w-savings" type="number" placeholder="0" min="0" step="1000" value="0"></div>
+      </div>
+      <div class="w-error" id="w-err">Please fill all required fields with valid values.</div>
+    </div>
+
+    <!-- Step 2 -->
+    <div id="wp-2" class="wizard-panel">
+      <div class="step-hed">
+        <div class="step-num-label">Step 2 of 4</div>
+        <div class="step-title">What will it cost in the future?</div>
+        <div class="step-desc">Inflation increases the real cost of your goal over time</div>
+      </div>
+      <div class="fv-row">
+        <span>Today's cost: <b id="s2-cur">₹0</b></span>
+        <span>Horizon: <b id="s2-yrs">0 years</b></span>
+      </div>
+      <div class="fv-display">
+        <div class="fv-label">Inflation-Adjusted Future Value</div>
+        <div class="fv-value" id="s2-fv">₹0</div>
+        <div class="fv-sub" id="s2-extra"></div>
+      </div>
+      <div class="inflation-row">
+        <div class="infl-info">
+          <b id="s2-inf-label">Inflation Rate</b>
+          <span id="s2-reason"></span>
+        </div>
+        <div class="infl-right">
+          <input class="infl-input" id="w-inf" type="number" min="1" max="20" step="0.5" oninput="updateFVDisplay()">
+          <span style="color:var(--text2);font-size:.85rem">% p.a.</span>
+        </div>
+      </div>
+      <div class="res-note">💡 You can adjust the rate above. Education inflation in India averages 8–10%, while general consumer inflation is around 5–6%.</div>
+    </div>
+
+    <!-- Step 3 -->
+    <div id="wp-3" class="wizard-panel">
+      <div class="step-hed">
+        <div class="step-num-label">Step 3 of 4</div>
+        <div class="step-title">How should you invest?</div>
+        <div class="step-desc">Your time horizon determines the right investment type</div>
+      </div>
+      <div id="s3-content"></div>
+    </div>
+
+    <!-- Step 4 -->
+    <div id="wp-4" class="wizard-panel">
+      <div class="step-hed">
+        <div class="step-num-label">Step 4 of 4</div>
+        <div class="step-title">Your monthly SIP amount</div>
+        <div class="step-desc">The exact amount to invest every month to reach your goal</div>
+      </div>
+      <div id="s4-content"></div>
+    </div>
+
+    <!-- Nav -->
+    <div class="wizard-nav">
+      <button class="btn-wz-back" id="wz-back" onclick="wzBack()" style="display:none">← Back</button>
+      <button class="btn-wz-next" id="wz-next" onclick="wzNext()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ── CONSTANTS ──────────────────────────────────────────────────────────────
+const CAT_ICON  = {education:'🎓',home:'🏠',retirement:'🌱',marriage:'💍',travel:'✈️',vehicle:'🚗',business:'💼',other:'🎯'};
+const CAT_NAME  = {education:"Child's Education",home:"Home Purchase",retirement:"Retirement",marriage:"Child's Marriage",travel:"Dream Vacation",vehicle:"Vehicle",business:"Business",other:"Other"};
+const CAT_COLOR = {education:'#60a5fa',home:'#a78bfa',retirement:'#0fcf8c',marriage:'#f472b6',travel:'#f5a623',vehicle:'#fb923c',business:'#38bdf8',other:'#f5a623'};
+
+const INF_RATE   = {education:8,home:7,retirement:6,marriage:7,travel:5,vehicle:4,business:6,other:6};
+const INF_REASON = {
+  education:'Higher education costs in India rise ~8% per year',
+  home:'Property prices appreciate ~7% annually',
+  retirement:'Living expenses inflate ~6% per year',
+  marriage:'Wedding costs rise ~7% per year',
+  travel:'Travel costs rise ~5% per year',
+  vehicle:'Vehicle prices rise ~4% per year',
+  business:'Business costs inflate ~6% per year',
+  other:'General inflation ~6% per year',
+};
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let goals = [];
+let calcChart = null;
+let wz = {step:1,id:null,name:'',category:'education',currentValue:0,years:0,savings:0,inflation:8,futureValue:0,strat:null,sip:0};
+
+// ── STRATEGY ───────────────────────────────────────────────────────────────
+function strategy(yrs) {
+  if (yrs < 3)  return {label:'Short Term', chip:'chip-short',  rate:.07,  rateStr:'7% p.a.',   equity:false, instr:['Liquid Mutual Funds','Short-term FDs','Recurring Deposits','Arbitrage Funds']};
+  if (yrs<=10)  return {label:'Medium Term',chip:'chip-medium', rate:.085, rateStr:'8.5% p.a.', equity:false, instr:['Debt Mutual Funds','Bank FDs / RDs','PPF top-ups','Arbitrage Funds']};
+  return               {label:'Long Term',  chip:'chip-long',   rate:.12,  rateStr:'12% p.a.',  equity:true,  instr:['Equity Mutual Funds','NPS (Tier 1)','ELSS Funds','Direct Equity']};
+}
+
+// ── FORMULAS ──────────────────────────────────────────────────────────────
+// Future Goal Value = Current Cost × (1 + Inflation Rate)^Years
+//   done in wizard step 2: futureValue = currentValue × (1 + inf/100)^years
+//
+// SIP = NetFutureAmount × r ÷ [((1+r)^n − 1) × (1+r)]
+//   where  r = annualReturn ÷ 12   (monthly return rate)
+//          n = years × 12          (total months)
+//   NetFutureAmount = FutureGoalValue − FutureValue of existing savings
+//   FutureValueOfSavings = savings × (1 + annualReturn)^years
+
+function sipNeeded(futureGoalValue, currentSavings, years, annualReturn) {
+  const r = annualReturn / 12;          // monthly return rate
+  const n = years * 12;                 // total number of months
+  // grow existing savings at same return rate
+  const fvOfSavings = currentSavings * Math.pow(1 + annualReturn, years);
+  // net corpus still needed via SIP
+  const netNeeded = futureGoalValue - fvOfSavings;
+  if (netNeeded <= 0) return 0;
+  // SIP = netNeeded × r ÷ [((1+r)^n − 1) × (1+r)]
+  return netNeeded * r / ((Math.pow(1 + r, n) - 1) * (1 + r));
+}
+
+// ── FORMAT ─────────────────────────────────────────────────────────────────
+function fmt(n) {
+  n=Math.round(n);
+  if(n>=1e7) return '₹'+(n/1e7).toFixed(2)+' Cr';
+  if(n>=1e5) return '₹'+(n/1e5).toFixed(1)+'L';
+  if(n>=1e3) return '₹'+(n/1e3).toFixed(1)+'K';
+  return '₹'+n.toLocaleString('en-IN');
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── RENDER CARDS ───────────────────────────────────────────────────────────
+function render() {
+  const grid=document.getElementById('goals-grid'), empty=document.getElementById('empty');
+  grid.innerHTML='';
+  if(!goals.length){empty.style.display='block';updateStats();return;}
+  empty.style.display='none';
+  goals.forEach((g,i)=>{
+    const st=strategy(g.years), sip=sipNeeded(g.target,g.savings,g.years,st.rate);
+    const pct=Math.min(100,g.target>0?(g.savings/g.target)*100:0);
+    const color=CAT_COLOR[g.category]||'#f5a623', onTrack=sip<=0;
+    const card=document.createElement('div');
+    card.className='goal-card';
+    card.style.cssText=`--c:${color};animation-delay:${i*0.06}s`;
+    card.innerHTML=`
+      <div class="card-top">
+        <div class="card-left">
+          <div class="goal-icon" style="background:${color}1e">${CAT_ICON[g.category]||'🎯'}</div>
+          <div><div class="goal-name">${esc(g.name)}</div><div class="goal-cat">${CAT_NAME[g.category]}</div></div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-ico" onclick="openModal('${g.id}')" title="Edit">✏️</button>
+          <button class="btn-ico del" onclick="del('${g.id}')" title="Delete">🗑️</button>
+        </div>
+      </div>
+      <div class="target-amt" style="color:${color}">${fmt(g.target)}</div>
+      ${g.currentValue?`<div class="target-cv">Today's cost: ${fmt(g.currentValue)} &middot; ${g.inflation||'?'}% inflation</div>`:''}
+      <div class="target-meta">${g.years} year${g.years!==1?'s':''} away &middot; ${st.rateStr}</div>
+      <div class="prog-hdr"><span>Saved: ${fmt(g.savings)}</span><span>${pct.toFixed(1)}%</span></div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${color}"></div></div>
+      <div class="info-grid">
+        <div class="info-cell"><div class="ic-label">Monthly SIP</div><div class="ic-val" style="color:${color}">${onTrack?'&mdash;':'&#8377;'+Math.round(sip).toLocaleString('en-IN')}</div></div>
+        <div class="info-cell"><div class="ic-label">Total to Invest</div><div class="ic-val">${onTrack?'&mdash;':fmt(sip*g.years*12)}</div></div>
+      </div>
+      ${onTrack
+        ?`<div class="on-track">&#10003; Goal on track with current savings!</div>`
+        :`<div class="chips">
+            <span class="chip ${st.chip}">${st.label}</span>
+            <span class="chip ${st.equity?'chip-equity':'chip-noequity'}">${st.equity?'&#10003; Equity':'&#x2715; No Equity'}</span>
+            ${st.instr.slice(0,2).map(x=>`<span class="chip chip-debt">${x}</span>`).join('')}
+          </div>`
+      }`;
+    grid.appendChild(card);
+  });
+  updateStats();
+}
+
+function updateStats() {
+  const totalSIP=goals.reduce((s,g)=>{const st=strategy(g.years);return s+sipNeeded(g.target,g.savings,g.years,st.rate);},0);
+  const totalCorpus=goals.reduce((s,g)=>s+Number(g.target),0);
+  const totalSaved=goals.reduce((s,g)=>s+Number(g.savings),0);
+  document.getElementById('s-goals').textContent=goals.length;
+  document.getElementById('s-sip').textContent=goals.length?'₹'+Math.round(totalSIP).toLocaleString('en-IN')+'/mo':'₹0';
+  document.getElementById('s-corpus').textContent=goals.length?fmt(totalCorpus):'₹0';
+  document.getElementById('s-saved').textContent=goals.length?fmt(totalSaved):'₹0';
+  document.getElementById('goal-count').textContent=goals.length;
+}
+
+function del(id){if(!confirm('Remove this goal?'))return;goals=goals.filter(g=>g.id!==id);save();render();}
+
+// ── WIZARD ─────────────────────────────────────────────────────────────────
+function openModal(id=null) {
+  const g=id?goals.find(x=>x.id===id):null;
+  wz=g
+    ?{step:1,id,name:g.name,category:g.category,currentValue:g.currentValue||g.target,years:g.years,savings:g.savings,inflation:g.inflation||INF_RATE[g.category]||6,futureValue:g.target,strat:null,sip:0}
+    :{step:1,id:null,name:'',category:'education',currentValue:0,years:0,savings:0,inflation:8,futureValue:0,strat:null,sip:0};
+  document.getElementById('m-title').textContent=id?'Edit Goal':'Add New Goal';
+  document.getElementById('overlay').classList.add('open');
+  goToStep(1);
+  setTimeout(()=>document.getElementById('w-name').focus(),200);
+}
+function closeModal(){document.getElementById('overlay').classList.remove('open');wz.id=null;}
+function bgClose(e){if(e.target===document.getElementById('overlay'))closeModal();}
+
+function goToStep(n) {
+  wz.step=n;
+  [1,2,3,4].forEach(i=>{
+    document.getElementById('wp-'+i).classList.toggle('active',i===n);
+    const ws=document.getElementById('ws-'+i);
+    ws.className='ws-item'+(i===n?' ws-active':i<n?' ws-done':'');
+    if(i<4) document.getElementById('wl-'+i).classList.toggle('done',i<n);
+  });
+  document.getElementById('wz-back').style.display=n>1?'':'none';
+  const nb=document.getElementById('wz-next');
+  nb.textContent=n===4?'✓ Save Goal':'Next →';
+  nb.className='btn-wz-next'+(n===4?' save':'');
+  if(n===1) fillStep1();
+  if(n===2) fillStep2();
+  if(n===3) fillStep3();
+  if(n===4) fillStep4();
+}
+
+function wzNext() {
+  const n=wz.step;
+  if(n===1){
+    const name=document.getElementById('w-name').value.trim();
+    const cat=document.getElementById('w-cat').value;
+    const cv=parseFloat(document.getElementById('w-cv').value);
+    const yrs=parseFloat(document.getElementById('w-years').value);
+    const sav=parseFloat(document.getElementById('w-savings').value)||0;
+    const err=document.getElementById('w-err');
+    if(!name||!cv||cv<100||!yrs||yrs<1){err.style.display='block';return;}
+    err.style.display='none';
+    Object.assign(wz,{name,category:cat,currentValue:cv,years:yrs,savings:sav,inflation:INF_RATE[cat]||6});
+    wz.futureValue=cv*Math.pow(1+wz.inflation/100,yrs);
+    goToStep(2);
+  } else if(n===2){
+    const inf=Math.max(1,Math.min(20,parseFloat(document.getElementById('w-inf').value)||wz.inflation));
+    wz.inflation=inf;
+    wz.futureValue=wz.currentValue*Math.pow(1+inf/100,wz.years);
+    wz.strat=strategy(wz.years);
+    goToStep(3);
+  } else if(n===3){
+    wz.sip=sipNeeded(wz.futureValue,wz.savings,wz.years,wz.strat.rate);
+    goToStep(4);
+  } else if(n===4){
+    const g={id:wz.id||uid(),name:wz.name,category:wz.category,target:Math.round(wz.futureValue),years:wz.years,savings:wz.savings,currentValue:wz.currentValue,inflation:wz.inflation};
+    if(wz.id){const idx=goals.findIndex(x=>x.id===wz.id);goals[idx]=g;}
+    else goals.push(g);
+    save();render();closeModal();
+  }
+}
+function wzBack(){if(wz.step>1)goToStep(wz.step-1);}
+
+// ─ Step fillers ────────────────────────────────────────────────────────────
+function fillStep1(){
+  document.getElementById('w-name').value=wz.name||'';
+  document.getElementById('w-cat').value=wz.category||'education';
+  document.getElementById('w-cv').value=wz.currentValue||'';
+  document.getElementById('w-years').value=wz.years||'';
+  document.getElementById('w-savings').value=wz.savings||0;
+  document.getElementById('w-err').style.display='none';
+  if(wz.currentValue) document.getElementById('w-cv-hint').textContent=fmt(wz.currentValue);
+}
+function onCatChange(){
+  const cat=document.getElementById('w-cat').value;
+  wz.category=cat; wz.inflation=INF_RATE[cat]||6;
+}
+function onCVChange(){
+  const v=parseFloat(document.getElementById('w-cv').value)||0;
+  document.getElementById('w-cv-hint').textContent=v?fmt(v):'';
+}
+
+function fillStep2(){
+  const inf=wz.inflation;
+  document.getElementById('w-inf').value=inf;
+  document.getElementById('s2-cur').textContent=fmt(wz.currentValue);
+  document.getElementById('s2-yrs').textContent=wz.years+' year'+(wz.years!==1?'s':'');
+  document.getElementById('s2-reason').textContent=INF_REASON[wz.category]||'';
+  document.getElementById('s2-inf-label').textContent='Inflation Rate';
+  updateFVDisplay();
+}
+function updateFVDisplay(){
+  const inf=Math.max(1,Math.min(20,parseFloat(document.getElementById('w-inf').value)||wz.inflation));
+  const fv=wz.currentValue*Math.pow(1+inf/100,wz.years);
+  document.getElementById('s2-fv').textContent=fmt(fv);
+  document.getElementById('s2-extra').textContent='Extra cost due to inflation: +'+fmt(fv-wz.currentValue);
+  wz.futureValue=fv; wz.inflation=inf;
+}
+
+function fillStep3(){
+  const st=wz.strat||strategy(wz.years);
+  wz.strat=st;
+  const eq=st.equity;
+  document.getElementById('s3-content').innerHTML=`
+    <div class="strat-card" style="background:var(--bg3);border-color:${eq?'var(--green)':'var(--gold)'}">
+      <div class="strat-badge" style="background:${eq?'var(--green-d)':'var(--gold-dim)'};color:${eq?'var(--green)':'var(--gold)'}">
+        ${eq?'🏆':'🛡️'} &nbsp;${st.label}
+      </div>
+      <div class="strat-head">${eq?'Equity Investing — Recommended':'Debt Instruments Only'}</div>
+      <div class="strat-rate">Expected return: <strong style="color:var(--text)">${st.rateStr}</strong> &nbsp;|&nbsp; Goal: <strong style="color:var(--text)">${wz.years} years away</strong></div>
+      <div class="instr-list">${st.instr.map(x=>`<span class="instr-pill">${x}</span>`).join('')}</div>
+    </div>
+    <div class="rule-box ${eq?'yes-equity':'no-equity'}">
+      ${eq
+        ?`✅ <strong>${wz.years} years</strong> is a long horizon. Equity mutual funds can withstand short-term volatility and deliver 12%+ CAGR over this period — making them the best vehicle to beat inflation and grow your corpus.`
+        :`⚠️ <strong>${wz.years} years</strong> is too short for equity. Market downturns can take 3–5 years to recover, putting your goal at risk. Debt instruments protect your principal while still earning above savings account rates.`
+      }
+    </div>
+  `;
+}
+
+function fillStep4(){
+  const sip=wz.sip, onTrack=sip<=0;
+  const totalInv=onTrack?0:Math.round(sip*wz.years*12);
+  const returns=onTrack?0:Math.round(wz.futureValue-totalInv);
+  document.getElementById('s4-content').innerHTML=`
+    ${onTrack
+      ?`<div class="sip-hero"><div class="sip-label">Status</div><div class="sip-amount" style="color:var(--green)">On Track ✅</div><div class="sip-sub">Your current savings will reach ₹${fmt(wz.futureValue).replace('₹','')} by then</div></div>`
+      :`<div class="sip-hero">
+          <div class="sip-label">Monthly SIP Needed</div>
+          <div class="sip-amount">₹${Math.round(sip).toLocaleString('en-IN')}</div>
+          <div class="sip-sub">every month for ${wz.years} year${wz.years!==1?'s':''}</div>
+        </div>`
+    }
+    <div class="journey-strip">
+      <span class="j-step">${fmt(wz.currentValue)} today</span><span class="j-arr">→</span>
+      <span class="j-step">${wz.inflation}% inflation</span><span class="j-arr">→</span>
+      <span class="j-step">${fmt(wz.futureValue)} needed</span><span class="j-arr">→</span>
+      <span class="j-step">${wz.strat.label} (${wz.strat.rateStr})</span><span class="j-arr">→</span>
+      <span class="j-step" style="color:var(--gold)">${onTrack?'On Track ✅':'₹'+Math.round(sip).toLocaleString('en-IN')+'/mo'}</span>
+    </div>
+    <div class="sum-grid">
+      <div class="sum-cell"><div class="sum-lbl">Today's Cost</div><div class="sum-val">${fmt(wz.currentValue)}</div></div>
+      <div class="sum-cell"><div class="sum-lbl">Future Value</div><div class="sum-val" style="color:var(--gold)">${fmt(wz.futureValue)}</div></div>
+      <div class="sum-cell"><div class="sum-lbl">Inflation Rate</div><div class="sum-val">${wz.inflation}% p.a.</div></div>
+      <div class="sum-cell"><div class="sum-lbl">Return Rate</div><div class="sum-val">${wz.strat.rateStr}</div></div>
+      ${!onTrack?`
+      <div class="sum-cell"><div class="sum-lbl">Total Invested</div><div class="sum-val">${fmt(totalInv)}</div></div>
+      <div class="sum-cell"><div class="sum-lbl">Wealth Created</div><div class="sum-val" style="color:var(--green)">${fmt(returns)}</div></div>`:''}
+    </div>
+    <div class="res-note">💡 <strong>Instrument:</strong> ${wz.strat.instr.join(' · ')}</div>
+  `;
+}
+
+// ── STANDALONE CALCULATOR ──────────────────────────────────────────────────
+function calcUpdate(){
+  const tgt=parseFloat(document.getElementById('c-target').value)||0;
+  const yrs=parseFloat(document.getElementById('c-years').value)||0;
+  const sav=parseFloat(document.getElementById('c-savings').value)||0;
+  const th=document.getElementById('c-target-hint'), yh=document.getElementById('c-years-hint');
+  const res=document.getElementById('c-result'), cw=document.getElementById('c-chart-wrap');
+  if(tgt) th.textContent=fmt(tgt); else th.textContent='';
+  if(!tgt||!yrs){res.innerHTML='<div style="text-align:center;color:var(--text3);font-size:.82rem;padding:1rem 0;">Enter target amount and years to see your plan</div>';cw.style.display='none';return;}
+  const st=strategy(yrs), sip=sipNeeded(tgt,sav,yrs,st.rate);
+  const totalInv=sip>0?sip*yrs*12:0, wealth=sip>0?tgt-totalInv:0;
+  yh.className='fhint '+(yrs<10?'warn':'ok');
+  yh.textContent=yrs<3?'⚠ Short term — debt only':yrs<=10?'⚠ Under 10 years — equity not recommended':'✓ Long term — equity allowed';
+  res.innerHTML=`
+    <div class="res-row"><span class="res-label">Horizon</span><span class="res-val">${st.label} (${yrs} yrs)</span></div>
+    <div class="res-row"><span class="res-label">Return Rate</span><span class="res-val">${st.rateStr}</span></div>
+    <div class="res-row"><span class="res-label">Instrument</span><span class="res-val" style="color:${st.equity?'var(--green)':'var(--gold)'}">${st.equity?'Equity Funds':'Debt Instruments'}</span></div>
+    <div class="res-row"><span class="res-label">Monthly SIP</span><span class="res-val big">${sip<=0?'✅ On Track':'₹'+Math.round(sip).toLocaleString('en-IN')}</span></div>
+    ${sip>0?`<div class="res-row"><span class="res-label">Total Invested</span><span class="res-val">${fmt(totalInv)}</span></div>
+    <div class="res-row"><span class="res-label">Wealth Created</span><span class="res-val" style="color:var(--green)">${fmt(wealth)}</span></div>`:''}
+    <div class="res-note">${st.instr.join(' · ')}${!st.equity?'<br>No equity — goal is within 10 years.':''}</div>
+  `;
+  if(sip>0){cw.style.display='block';drawCalcChart(tgt,sav,yrs,sip,st.rate);}
+  else cw.style.display='none';
+}
+
+function drawCalcChart(target,savings,years,monthSIP,annRate){
+  const pts=Math.min(10,Math.round(years)), labels=[],inv=[],corpus=[];
+  for(let i=1;i<=pts;i++){
+    const y=(years/pts)*i, n=Math.round(y*12), r=annRate/12;
+    const fvSIP=monthSIP*(Math.pow(1+r,n)-1)/r*(1+r);
+    const fvSav=savings*Math.pow(1+annRate,y);
+    labels.push('Yr '+Math.round(y));
+    inv.push(parseFloat(((monthSIP*n+savings)/1e5).toFixed(2)));
+    corpus.push(parseFloat(((fvSIP+fvSav)/1e5).toFixed(2)));
+  }
+  const ctx=document.getElementById('c-chart').getContext('2d');
+  if(calcChart)calcChart.destroy();
+  Chart.defaults.color='#7b9cbf';
+  calcChart=new Chart(ctx,{type:'line',data:{labels,datasets:[
+    {label:'Invested',data:inv,borderColor:'#3b5a7a',backgroundColor:'transparent',borderWidth:1.5,tension:.4,pointRadius:2},
+    {label:'Corpus',data:corpus,borderColor:'#f5a623',backgroundColor:'rgba(245,166,35,0.08)',borderWidth:2.5,tension:.4,fill:true,pointRadius:3}
+  ]},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:16,font:{size:11}}},tooltip:{backgroundColor:'#0c1830',borderColor:'#1e3058',borderWidth:1}},
+    scales:{x:{grid:{color:'rgba(30,48,88,.6)'},ticks:{font:{size:10}}},y:{grid:{color:'rgba(30,48,88,.6)'},ticks:{font:{size:10},callback:v=>'₹'+v+'L'}}}
+  }});
+}
+
+// ── UTILS ──────────────────────────────────────────────────────────────────
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function save(){try{localStorage.setItem('fingoal_v6',JSON.stringify(goals));}catch(_){}}
+function load(){try{const d=localStorage.getItem('fingoal_v6');if(d)goals=JSON.parse(d);}catch(_){}}
+
+// ── SEED ───────────────────────────────────────────────────────────────────
+function seed(){
+  goals=[];
+  save();
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+load();
+if(!goals.length) seed();
+render();
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+</script>
+</body>
+</html>
