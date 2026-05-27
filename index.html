@@ -81,6 +81,7 @@ main{max-width:1180px;margin:0 auto;padding:2rem 1.5rem 8rem;}
 .chip{font-size:.67rem;padding:3px 8px;border-radius:4px;font-weight:500;white-space:nowrap;border:1px solid transparent;}
 .chip-short{background:var(--blue-d);color:var(--blue);border-color:rgba(96,165,250,.18);}
 .chip-medium{background:var(--purple-d);color:var(--purple);border-color:rgba(167,139,250,.18);}
+.chip-medium2{background:rgba(251,146,60,.12);color:#fb923c;border-color:rgba(251,146,60,.22);}
 .chip-long{background:var(--green-d);color:var(--green);border-color:rgba(15,207,140,.18);}
 .chip-debt{background:var(--gold-dim);color:var(--gold);border-color:rgba(245,166,35,.18);}
 .chip-equity{background:var(--green-d);color:var(--green);border-color:rgba(15,207,140,.18);}
@@ -234,7 +235,7 @@ main{max-width:1180px;margin:0 auto;padding:2rem 1.5rem 8rem;}
   </div>
 
   <div class="rule-banner">
-    ⚡ <span><b>Golden Rule:</b> Equity investments only for goals &gt; 10 years away. Under 10 years — debt instruments only to protect your corpus.</span>
+    ⚡ <span><b>Golden Rule:</b> &lt;3 yrs: Liquid/FD &nbsp;·&nbsp; 3–7 yrs: Debt only &nbsp;·&nbsp; 7–10 yrs: Conservative Hybrid &nbsp;·&nbsp; &gt;10 yrs: 60% Equity + 40% Debt</span>
   </div>
 
   <div class="stats-row">
@@ -366,20 +367,44 @@ main{max-width:1180px;margin:0 auto;padding:2rem 1.5rem 8rem;}
           <option value="other">🎯  Other</option>
         </select>
       </div>
-      <div class="frow">
-        <div class="fg">
-          <label>Current Cost in Today's ₹</label>
-          <div class="rp-fg"><input id="w-cv" type="number" placeholder="700000" required min="100" step="1000" oninput="onCVChange()"></div>
-          <div class="fhint" id="w-cv-hint"></div>
+      <!-- Standard cost field (hidden for retirement) -->
+      <div id="normal-cost-wrap">
+        <div class="frow">
+          <div class="fg">
+            <label>Current Cost in Today's ₹</label>
+            <div class="rp-fg"><input id="w-cv" type="number" placeholder="700000" min="100" step="1000" oninput="onCVChange()"></div>
+            <div class="fhint" id="w-cv-hint"></div>
+          </div>
+          <div class="fg">
+            <label>Years to Goal</label>
+            <input id="w-years" type="number" placeholder="15" min="1" max="50">
+          </div>
         </div>
-        <div class="fg">
-          <label>Years to Goal</label>
-          <input id="w-years" type="number" placeholder="15" required min="1" max="50">
+      </div>
+      <!-- Retirement-specific fields -->
+      <div id="retirement-cost-wrap" style="display:none">
+        <div class="frow">
+          <div class="fg">
+            <label>Current Monthly Expenses (₹)</label>
+            <div class="rp-fg"><input id="w-monthly" type="number" placeholder="50000" min="100" step="500" oninput="onMonthlyChange()"></div>
+            <div class="fhint" id="w-monthly-hint"></div>
+          </div>
+          <div class="fg">
+            <label>Years to Retirement</label>
+            <input id="w-ret-years" type="number" placeholder="25" min="1" max="50" oninput="onMonthlyChange()">
+          </div>
+        </div>
+        <div id="ret-preview" style="display:none;background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:.85rem 1rem;font-size:.78rem;color:var(--text2);line-height:1.9;margin-bottom:.5rem">
         </div>
       </div>
       <div class="fg">
         <label>Current Savings Towards This Goal (₹)</label>
-        <div class="rp-fg"><input id="w-savings" type="number" placeholder="0" min="0" step="1000" value="0"></div>
+        <div class="rp-fg"><input id="w-savings" type="number" placeholder="0" min="0" step="1000" value="0" oninput="toggleSavingsRate()"></div>
+      </div>
+      <div class="fg" id="srate-wrap" style="display:none">
+        <label>Current Savings Return Rate (% p.a.)</label>
+        <input id="w-srate" type="number" placeholder="4" min="0" max="20" step="0.5" value="4">
+        <div class="fhint">e.g. &nbsp;4% savings a/c &nbsp;·&nbsp; 7% FD &nbsp;·&nbsp; 7.5% Debt MF &nbsp;·&nbsp; 8.5% Conservative Hybrid &nbsp;·&nbsp; 12% Equity MF</div>
       </div>
       <div class="w-error" id="w-err">Please fill all required fields with valid values.</div>
     </div>
@@ -463,13 +488,17 @@ const INF_REASON = {
 // ── STATE ──────────────────────────────────────────────────────────────────
 let goals = [];
 let calcChart = null;
-let wz = {step:1,id:null,name:'',category:'education',currentValue:0,years:0,savings:0,inflation:8,futureValue:0,strat:null,sip:0};
+let wz = {step:1,id:null,name:'',category:'education',currentValue:0,monthlyExpenses:0,years:0,savings:0,savingsRate:0.04,inflation:8,futureValue:0,strat:null,sip:0};
 
 // ── STRATEGY ───────────────────────────────────────────────────────────────
+// 10+ yrs: 60% equity (12%) + 40% debt (7.5%) = blended 10.2%
+const LONG_RATE = 0.60 * 0.12 + 0.40 * 0.075;
+
 function strategy(yrs) {
-  if (yrs < 3)  return {label:'Short Term', chip:'chip-short',  rate:.07,  rateStr:'7% p.a.',   equity:false, instr:['Liquid Mutual Funds','Short-term FDs','Recurring Deposits','Arbitrage Funds']};
-  if (yrs<=10)  return {label:'Medium Term',chip:'chip-medium', rate:.085, rateStr:'8.5% p.a.', equity:false, instr:['Debt Mutual Funds','Bank FDs / RDs','PPF top-ups','Arbitrage Funds']};
-  return               {label:'Long Term',  chip:'chip-long',   rate:.12,  rateStr:'12% p.a.',  equity:true,  instr:['Equity Mutual Funds','NPS (Tier 1)','ELSS Funds','Direct Equity']};
+  if (yrs < 3)   return {label:'Short Term',            chip:'chip-short',   rate:0.060,      rateStr:'6% p.a.',    equity:false, alloc:null,           instr:['Liquid Mutual Funds','Short-term FDs','Recurring Deposits','Arbitrage Funds']};
+  if (yrs <= 7)  return {label:'Medium Term (3-7 yrs)', chip:'chip-medium',  rate:0.075,      rateStr:'7.5% p.a.', equity:false, alloc:null,           instr:['Debt Mutual Funds','Bank FDs / RDs','PPF top-ups','Arbitrage Funds']};
+  if (yrs <= 10) return {label:'Medium Term (7-10 yrs)',chip:'chip-medium2', rate:0.085,      rateStr:'8.5% p.a.', equity:false, alloc:null,           instr:['Conservative Hybrid Funds','Debt Mutual Funds','PPF','Bank FDs']};
+  return                {label:'Long Term (10+ yrs)',   chip:'chip-long',    rate:LONG_RATE,  rateStr:'10.2% p.a.',equity:true,  alloc:{equity:60,debt:40}, instr:['Equity MF 60% — Nifty 50 Index / Flexi-cap','Debt MF 40% — Short Duration / Gilt','NPS Tier 1 (Aggressive)','ELSS Funds']};
 }
 
 // ── FORMULAS ──────────────────────────────────────────────────────────────
@@ -482,11 +511,12 @@ function strategy(yrs) {
 //   NetFutureAmount = FutureGoalValue − FutureValue of existing savings
 //   FutureValueOfSavings = savings × (1 + annualReturn)^years
 
-function sipNeeded(futureGoalValue, currentSavings, years, annualReturn) {
-  const r = annualReturn / 12;          // monthly return rate
-  const n = years * 12;                 // total number of months
-  // grow existing savings at same return rate
-  const fvOfSavings = currentSavings * Math.pow(1 + annualReturn, years);
+function sipNeeded(futureGoalValue, currentSavings, years, annualReturn, savingsReturn) {
+  const r  = annualReturn / 12;         // monthly investment return rate
+  const n  = years * 12;               // total number of months
+  const sr = (savingsReturn !== undefined ? savingsReturn : annualReturn); // savings grow at their own rate
+  // grow existing savings at their own return rate
+  const fvOfSavings = currentSavings * Math.pow(1 + sr, years);
   // net corpus still needed via SIP
   const netNeeded = futureGoalValue - fvOfSavings;
   if (netNeeded <= 0) return 0;
@@ -511,7 +541,7 @@ function render() {
   if(!goals.length){empty.style.display='block';updateStats();return;}
   empty.style.display='none';
   goals.forEach((g,i)=>{
-    const st=strategy(g.years), sip=sipNeeded(g.target,g.savings,g.years,st.rate);
+    const st=strategy(g.years), sip=sipNeeded(g.target,g.savings,g.years,st.rate,g.savingsRate||0.04);
     const pct=Math.min(100,g.target>0?(g.savings/g.target)*100:0);
     const color=CAT_COLOR[g.category]||'#f5a623', onTrack=sip<=0;
     const card=document.createElement('div');
@@ -567,7 +597,7 @@ function del(id){if(!confirm('Remove this goal?'))return;goals=goals.filter(g=>g
 function openModal(id=null) {
   const g=id?goals.find(x=>x.id===id):null;
   wz=g
-    ?{step:1,id,name:g.name,category:g.category,currentValue:g.currentValue||g.target,years:g.years,savings:g.savings,inflation:g.inflation||INF_RATE[g.category]||6,futureValue:g.target,strat:null,sip:0}
+    ?{step:1,id,name:g.name,category:g.category,currentValue:g.currentValue||g.target,monthlyExpenses:g.monthlyExpenses||0,years:g.years,savings:g.savings,savingsRate:g.savingsRate||0.04,inflation:g.inflation||INF_RATE[g.category]||6,futureValue:g.target,strat:null,sip:0}
     :{step:1,id:null,name:'',category:'education',currentValue:0,years:0,savings:0,inflation:8,futureValue:0,strat:null,sip:0};
   document.getElementById('m-title').textContent=id?'Edit Goal':'Add New Goal';
   document.getElementById('overlay').classList.add('open');
@@ -600,13 +630,20 @@ function wzNext() {
   if(n===1){
     const name=document.getElementById('w-name').value.trim();
     const cat=document.getElementById('w-cat').value;
-    const cv=parseFloat(document.getElementById('w-cv').value);
-    const yrs=parseFloat(document.getElementById('w-years').value);
     const sav=parseFloat(document.getElementById('w-savings').value)||0;
     const err=document.getElementById('w-err');
+    const srate=(parseFloat(document.getElementById('w-srate').value)||4)/100;
+    let cv=parseFloat(document.getElementById('w-cv').value)||0;
+    let yrs=parseFloat(document.getElementById('w-years').value)||0;
+    let monthly=0;
+    if(cat==='retirement'){
+      monthly=parseFloat(document.getElementById('w-monthly').value)||0;
+      yrs=parseFloat(document.getElementById('w-ret-years').value)||0;
+      cv=monthly*12*30; // corpus = monthly × 12 months × 30 years
+    }
     if(!name||!cv||cv<100||!yrs||yrs<1){err.style.display='block';return;}
     err.style.display='none';
-    Object.assign(wz,{name,category:cat,currentValue:cv,years:yrs,savings:sav,inflation:INF_RATE[cat]||6});
+    Object.assign(wz,{name,category:cat,currentValue:cv,monthlyExpenses:monthly,years:yrs,savings:sav,savingsRate:srate,inflation:INF_RATE[cat]||6});
     wz.futureValue=cv*Math.pow(1+wz.inflation/100,yrs);
     goToStep(2);
   } else if(n===2){
@@ -616,10 +653,10 @@ function wzNext() {
     wz.strat=strategy(wz.years);
     goToStep(3);
   } else if(n===3){
-    wz.sip=sipNeeded(wz.futureValue,wz.savings,wz.years,wz.strat.rate);
+    wz.sip=sipNeeded(wz.futureValue,wz.savings,wz.years,wz.strat.rate,wz.savingsRate);
     goToStep(4);
   } else if(n===4){
-    const g={id:wz.id||uid(),name:wz.name,category:wz.category,target:Math.round(wz.futureValue),years:wz.years,savings:wz.savings,currentValue:wz.currentValue,inflation:wz.inflation};
+    const g={id:wz.id||uid(),name:wz.name,category:wz.category,target:Math.round(wz.futureValue),years:wz.years,savings:wz.savings,savingsRate:wz.savingsRate,currentValue:wz.currentValue,monthlyExpenses:wz.monthlyExpenses||0,inflation:wz.inflation};
     if(wz.id){const idx=goals.findIndex(x=>x.id===wz.id);goals[idx]=g;}
     else goals.push(g);
     save();render();closeModal();
@@ -634,12 +671,45 @@ function fillStep1(){
   document.getElementById('w-cv').value=wz.currentValue||'';
   document.getElementById('w-years').value=wz.years||'';
   document.getElementById('w-savings').value=wz.savings||0;
+  document.getElementById('w-srate').value=(wz.savingsRate*100)||4;
   document.getElementById('w-err').style.display='none';
   if(wz.currentValue) document.getElementById('w-cv-hint').textContent=fmt(wz.currentValue);
+  // retirement-specific
+  const isRet=wz.category==='retirement';
+  document.getElementById('normal-cost-wrap').style.display=isRet?'none':'';
+  document.getElementById('retirement-cost-wrap').style.display=isRet?'block':'none';
+  if(isRet && wz.monthlyExpenses){
+    document.getElementById('w-monthly').value=wz.monthlyExpenses;
+    document.getElementById('w-ret-years').value=wz.years;
+    onMonthlyChange();
+  }
+  toggleSavingsRate();
+}
+function toggleSavingsRate(){
+  const sav=parseFloat(document.getElementById('w-savings').value)||0;
+  document.getElementById('srate-wrap').style.display=sav>0?'block':'none';
 }
 function onCatChange(){
   const cat=document.getElementById('w-cat').value;
   wz.category=cat; wz.inflation=INF_RATE[cat]||6;
+  const isRet=cat==='retirement';
+  document.getElementById('normal-cost-wrap').style.display=isRet?'none':'';
+  document.getElementById('retirement-cost-wrap').style.display=isRet?'block':'none';
+}
+function onMonthlyChange(){
+  const m=parseFloat(document.getElementById('w-monthly').value)||0;
+  const yrs=parseFloat(document.getElementById('w-ret-years').value)||0;
+  const hint=document.getElementById('w-monthly-hint');
+  const prev=document.getElementById('ret-preview');
+  if(m) hint.textContent='Annual expenses: '+fmt(m*12);
+  else{ hint.textContent=''; prev.style.display='none'; return; }
+  if(!yrs){ prev.style.display='none'; return; }
+  const corpus=m*12*30;
+  prev.style.display='block';
+  prev.innerHTML=
+    '<strong style="color:var(--text)">Today&#39;s retirement corpus estimate</strong><br>'+
+    '&#8377;'+m.toLocaleString('en-IN')+'/mo &times; 12 months &times; 30 years = <strong style="color:var(--gold)">'+fmt(corpus)+'</strong><br>'+
+    '<span style="font-size:.72rem">(Inflation-adjusted future value calculated in next step)</span>';
 }
 function onCVChange(){
   const v=parseFloat(document.getElementById('w-cv').value)||0;
@@ -649,17 +719,34 @@ function onCVChange(){
 function fillStep2(){
   const inf=wz.inflation;
   document.getElementById('w-inf').value=inf;
-  document.getElementById('s2-cur').textContent=fmt(wz.currentValue);
   document.getElementById('s2-yrs').textContent=wz.years+' year'+(wz.years!==1?'s':'');
   document.getElementById('s2-reason').textContent=INF_REASON[wz.category]||'';
   document.getElementById('s2-inf-label').textContent='Inflation Rate';
+  if(wz.category==='retirement'&&wz.monthlyExpenses){
+    document.getElementById('s2-cur').textContent=fmt(wz.monthlyExpenses)+'/mo';
+  } else {
+    document.getElementById('s2-cur').textContent=fmt(wz.currentValue);
+  }
   updateFVDisplay();
 }
 function updateFVDisplay(){
   const inf=Math.max(1,Math.min(20,parseFloat(document.getElementById('w-inf').value)||wz.inflation));
-  const fv=wz.currentValue*Math.pow(1+inf/100,wz.years);
+  let fv, extraText;
+  if(wz.category==='retirement'&&wz.monthlyExpenses){
+    // Future monthly expenses at retirement, then × 12 × 30
+    const futureMonthly=wz.monthlyExpenses*Math.pow(1+inf/100,wz.years);
+    const futureAnnual=futureMonthly*12;
+    fv=futureAnnual*30;
+    extraText=
+      'Monthly at retirement: '+fmt(futureMonthly)+'/mo'+
+      ' → Annual: '+fmt(futureAnnual)+
+      ' → 30 yrs corpus: '+fmt(fv);
+  } else {
+    fv=wz.currentValue*Math.pow(1+inf/100,wz.years);
+    extraText='Extra cost due to inflation: +'+fmt(fv-wz.currentValue);
+  }
   document.getElementById('s2-fv').textContent=fmt(fv);
-  document.getElementById('s2-extra').textContent='Extra cost due to inflation: +'+fmt(fv-wz.currentValue);
+  document.getElementById('s2-extra').textContent=extraText;
   wz.futureValue=fv; wz.inflation=inf;
 }
 
@@ -675,11 +762,22 @@ function fillStep3(){
       <div class="strat-head">${eq?'Equity Investing — Recommended':'Debt Instruments Only'}</div>
       <div class="strat-rate">Expected return: <strong style="color:var(--text)">${st.rateStr}</strong> &nbsp;|&nbsp; Goal: <strong style="color:var(--text)">${wz.years} years away</strong></div>
       <div class="instr-list">${st.instr.map(x=>`<span class="instr-pill">${x}</span>`).join('')}</div>
+      ${st.alloc?`<div style="margin-top:1rem">
+        <div style="font-size:.7rem;color:var(--text2);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.06em">Portfolio Allocation</div>
+        <div style="display:flex;height:10px;border-radius:99px;overflow:hidden">
+          <div style="width:60%;background:var(--green)"></div>
+          <div style="width:40%;background:var(--gold)"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:.35rem;font-size:.72rem">
+          <span style="color:var(--green)">&#9632; Equity 60%</span>
+          <span style="color:var(--gold)">&#9632; Debt 40%</span>
+        </div>
+      </div>`:''}
     </div>
     <div class="rule-box ${eq?'yes-equity':'no-equity'}">
       ${eq
-        ?`✅ <strong>${wz.years} years</strong> is a long horizon. Equity mutual funds can withstand short-term volatility and deliver 12%+ CAGR over this period — making them the best vehicle to beat inflation and grow your corpus.`
-        :`⚠️ <strong>${wz.years} years</strong> is too short for equity. Market downturns can take 3–5 years to recover, putting your goal at risk. Debt instruments protect your principal while still earning above savings account rates.`
+        ?`✅ <strong>${wz.years} years</strong> is a long horizon. A <strong>60% Equity / 40% Debt</strong> split gives growth to beat inflation while debt cushions volatility. Blended return: <strong>10.2% p.a.</strong> (Equity 12% × 60% + Debt 7.5% × 40%).`
+        :`${wz.years<=7?`⚠️ <strong>${wz.years} years</strong> is too short for equity. Debt-only instruments (FDs, Debt MFs) protect your principal while earning above savings account rates.`:`⚠️ <strong>${wz.years} years</strong> — Conservative Hybrid is ideal here. The 75–90% debt portion protects downside while the small equity sleeve (10–25%) adds a return kicker over your 7–10 year horizon. No pure equity.`}`
       }
     </div>
   `;
@@ -702,13 +800,14 @@ function fillStep4(){
       <span class="j-step">${fmt(wz.currentValue)} today</span><span class="j-arr">→</span>
       <span class="j-step">${wz.inflation}% inflation</span><span class="j-arr">→</span>
       <span class="j-step">${fmt(wz.futureValue)} needed</span><span class="j-arr">→</span>
-      <span class="j-step">${wz.strat.label} (${wz.strat.rateStr})</span><span class="j-arr">→</span>
+      <span class="j-step">${wz.strat.label}${wz.strat.alloc?" — 60% Eq / 40% Debt":""} (${wz.strat.rateStr})</span><span class="j-arr">→</span>
       <span class="j-step" style="color:var(--gold)">${onTrack?'On Track ✅':'₹'+Math.round(sip).toLocaleString('en-IN')+'/mo'}</span>
     </div>
     <div class="sum-grid">
-      <div class="sum-cell"><div class="sum-lbl">Today's Cost</div><div class="sum-val">${fmt(wz.currentValue)}</div></div>
+      ${wz.category==='retirement'&&wz.monthlyExpenses?`<div class="sum-cell"><div class="sum-lbl">Monthly Expenses</div><div class="sum-val">${fmt(wz.monthlyExpenses)}/mo</div></div>`:`<div class="sum-cell"><div class="sum-lbl">Today's Cost</div><div class="sum-val">${fmt(wz.currentValue)}</div></div>`}
       <div class="sum-cell"><div class="sum-lbl">Future Value</div><div class="sum-val" style="color:var(--gold)">${fmt(wz.futureValue)}</div></div>
       <div class="sum-cell"><div class="sum-lbl">Inflation Rate</div><div class="sum-val">${wz.inflation}% p.a.</div></div>
+      ${wz.savings>0?`<div class="sum-cell"><div class="sum-lbl">Savings Return</div><div class="sum-val">${(wz.savingsRate*100).toFixed(1)}% p.a.</div></div>`:''}
       <div class="sum-cell"><div class="sum-lbl">Return Rate</div><div class="sum-val">${wz.strat.rateStr}</div></div>
       ${!onTrack?`
       <div class="sum-cell"><div class="sum-lbl">Total Invested</div><div class="sum-val">${fmt(totalInv)}</div></div>
@@ -768,8 +867,8 @@ function drawCalcChart(target,savings,years,monthSIP,annRate){
 
 // ── UTILS ──────────────────────────────────────────────────────────────────
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
-function save(){try{localStorage.setItem('fingoal_v6',JSON.stringify(goals));}catch(_){}}
-function load(){try{const d=localStorage.getItem('fingoal_v6');if(d)goals=JSON.parse(d);}catch(_){}}
+function save(){try{localStorage.setItem('fingoal_v7',JSON.stringify(goals));}catch(_){}}
+function load(){try{const d=localStorage.getItem('fingoal_v7');if(d)goals=JSON.parse(d);}catch(_){}}
 
 // ── SEED ───────────────────────────────────────────────────────────────────
 function seed(){
