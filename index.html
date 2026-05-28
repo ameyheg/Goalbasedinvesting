@@ -514,9 +514,9 @@ main{max-width:1180px;margin:0 auto;padding:2rem 1.5rem 8rem;}
             <option value="custom">Custom Rate</option>
           </select>
         </div>
-        <div class="calc-field" id="c-custom-wrap" style="display:none">
-          <label class="calc-label">Custom Return Rate (% p.a.)</label>
-          <input class="calc-input" id="c-custom-rate" type="number" placeholder="12" min="1" max="30" step="0.5" value="12" oninput="calcUpdate()">
+        <div class="calc-field" id="c-custom-wrap">
+          <label class="calc-label">Expected Return Rate (% p.a.)</label>
+          <input class="calc-input" id="c-custom-rate" type="number" placeholder="12" min="1" max="30" step="0.1" value="12" oninput="calcUpdate()">
         </div>
         <div class="calc-field">
           <label class="calc-label">Annual SIP Step-up (%)</label>
@@ -1026,8 +1026,8 @@ function strategy(yrs) {
 
 // ── INSTRUMENT HELPERS ────────────────────────────────────────────────────
 function getGoalRate(g) {
+  if (g.customRate !== undefined && g.customRate !== null) return g.customRate / 100;
   if (!g.instrument || g.instrument === 'auto') return strategy(g.years).rate;
-  if (g.instrument === 'custom') return (g.customRate || 12) / 100;
   const instr = INSTRUMENTS.find(i => i.id === g.instrument);
   return instr ? instr.rate / 100 : strategy(g.years).rate;
 }
@@ -1037,10 +1037,13 @@ function getGoalRateStr(g) {
 }
 
 function getGoalInstrName(g) {
-  if (!g.instrument || g.instrument === 'auto') return null;
-  if (g.instrument === 'custom') return 'Custom (' + (g.customRate||12) + '%)';
+  const isCustom = g.customRate !== undefined && g.customRate !== null;
+  if (!g.instrument || g.instrument === 'auto') {
+    return isCustom ? 'Auto (Custom ' + g.customRate + '%)' : null;
+  }
   const instr = INSTRUMENTS.find(i => i.id === g.instrument);
-  return instr ? instr.name : null;
+  const name = instr ? instr.name : 'Unknown';
+  return isCustom ? name + ' (Custom ' + g.customRate + '%)' : name;
 }
 
 function getHorizonWarning(years, instrumentId) {
@@ -1099,6 +1102,25 @@ function triggerDangerFlash(instrEl) {
       modal.classList.remove('danger-border');
     }, { once: true });
   }
+}
+
+// ── RETIREMENT MULTIPLIER ─────────────────────────────────────────────────
+// Dynamic multiplier based on post-retirement duration (life expectancy 90)
+// Uses family profile age + years to retirement to determine retirement age
+// Tiers: 45+ yrs → 33x, 40 → 30x, 35 → 25x, 30 → 23x, ≤25 → 20x (floor)
+const LIFE_EXPECTANCY = 90;
+const DEFAULT_RET_MULTIPLIER = 23;
+
+function getRetirementMultiplier(yearsToRetirement) {
+  const selfAge = familyProfile ? familyProfile.selfAge : 0;
+  if (!selfAge) return DEFAULT_RET_MULTIPLIER;
+  const retirementAge = selfAge + yearsToRetirement;
+  const postRetYears = LIFE_EXPECTANCY - retirementAge;
+  if (postRetYears >= 45) return 33;
+  if (postRetYears >= 40) return 30;
+  if (postRetYears >= 35) return 25;
+  if (postRetYears >= 30) return 23;
+  return 20;
 }
 
 // ── FORMULAS ──────────────────────────────────────────────────────────────
@@ -1233,8 +1255,8 @@ function del(id){if(!confirm('Remove this goal?'))return;goals=goals.filter(g=>g
 function openModal(id=null) {
   const g=id?goals.find(x=>x.id===id):null;
   wz=g
-    ?{step:1,id,name:g.name,category:g.category,currentValue:g.currentValue||g.target,monthlyExpenses:g.monthlyExpenses||0,years:g.years,savings:g.savings,savingsRate:g.savingsRate||0.04,inflation:g.inflation||INF_RATE[g.category]||6,futureValue:g.target,strat:null,sip:0,instrument:g.instrument||'auto',customRate:g.customRate||12,stepUp:g.stepUp||0}
-    :{step:1,id:null,name:'',category:'education',currentValue:0,years:0,savings:0,inflation:8,futureValue:0,strat:null,sip:0,instrument:'auto',customRate:12,stepUp:0};
+    ?{step:1,id,name:g.name,category:g.category,currentValue:g.currentValue||g.target,monthlyExpenses:g.monthlyExpenses||0,years:g.years,savings:g.savings,savingsRate:g.savingsRate||0.04,inflation:g.inflation||INF_RATE[g.category]||6,futureValue:g.target,strat:null,sip:0,instrument:g.instrument||'auto',customRate:(g.customRate !== undefined && g.customRate !== null) ? g.customRate : null,stepUp:g.stepUp||0}
+    :{step:1,id:null,name:'',category:'education',currentValue:0,years:0,savings:0,inflation:8,futureValue:0,strat:null,sip:0,instrument:'auto',customRate:null,stepUp:0};
   document.getElementById('m-title').textContent=id?'Edit Goal':'Add New Goal';
   document.getElementById('overlay').classList.add('open');
   goToStep(1);
@@ -1275,7 +1297,7 @@ function wzNext() {
     if(cat==='retirement'){
       monthly=parseFloat(document.getElementById('w-monthly').value)||0;
       yrs=parseFloat(document.getElementById('w-ret-years').value)||0;
-      cv=monthly*12*30;
+      cv=monthly*12*getRetirementMultiplier(yrs);
     }
     if(!name||!cv||cv<100||!yrs||yrs<1){err.style.display='block';return;}
     err.style.display='none';
@@ -1310,8 +1332,8 @@ function wzNext() {
 function wzBack(){if(wz.step>1)goToStep(wz.step-1);}
 
 function getWzRate() {
+  if (wz.customRate !== undefined && wz.customRate !== null) return wz.customRate / 100;
   if (!wz.instrument || wz.instrument === 'auto') return wz.strat ? wz.strat.rate : strategy(wz.years).rate;
-  if (wz.instrument === 'custom') return (wz.customRate || 12) / 100;
   const instr = INSTRUMENTS.find(i => i.id === wz.instrument);
   return instr ? instr.rate / 100 : strategy(wz.years).rate;
 }
@@ -1356,12 +1378,13 @@ function onMonthlyChange(){
   if(m) hint.textContent='Annual expenses: '+fmt(m*12);
   else{ hint.textContent=''; prev.style.display='none'; return; }
   if(!yrs){ prev.style.display='none'; return; }
-  const corpus=m*12*30;
+  const retMul=getRetirementMultiplier(yrs);
+  const corpus=m*12*retMul;
   prev.style.display='block';
   prev.innerHTML=
     '<strong style="color:var(--text)">Today&#39;s retirement corpus estimate</strong><br>'+
-    '&#8377;'+m.toLocaleString('en-IN')+'/mo &times; 12 months &times; 30 years = <strong style="color:var(--gold)">'+fmt(corpus)+'</strong><br>'+
-    '<span style="font-size:.72rem">(Inflation-adjusted future value calculated in next step)</span>';
+    '&#8377;'+m.toLocaleString('en-IN')+'/mo &times; 12 months &times; '+retMul+' years = <strong style="color:var(--gold)">'+fmt(corpus)+'</strong><br>'+
+    '<span style="font-size:.72rem">('+retMul+'x multiplier based on '+(familyProfile&&familyProfile.selfAge?(LIFE_EXPECTANCY-familyProfile.selfAge-yrs)+' yrs post-retirement · life expectancy '+LIFE_EXPECTANCY:'default — set profile age for personalized estimate')+')</span>';
 }
 function onCVChange(){
   const v=parseFloat(document.getElementById('w-cv').value)||0;
@@ -1387,11 +1410,12 @@ function updateFVDisplay(){
   if(wz.category==='retirement'&&wz.monthlyExpenses){
     const futureMonthly=wz.monthlyExpenses*Math.pow(1+inf/100,wz.years);
     const futureAnnual=futureMonthly*12;
-    fv=futureAnnual*30;
+    const retMul=getRetirementMultiplier(wz.years);
+    fv=futureAnnual*retMul;
     extraText=
       'Monthly at retirement: '+fmt(futureMonthly)+'/mo'+
       ' → Annual: '+fmt(futureAnnual)+
-      ' → 30 yrs corpus: '+fmt(fv);
+      ' → '+retMul+' yrs corpus: '+fmt(fv);
   } else {
     fv=wz.currentValue*Math.pow(1+inf/100,wz.years);
     extraText='Extra cost due to inflation: +'+fmt(fv-wz.currentValue);
@@ -1454,21 +1478,20 @@ function fillStep3(){
 
   html += `</div>`;
 
-  // Custom rate input
+  // Permanent expected return rate with override and reset
   html += `
-    <div class="custom-rate-wrap" id="custom-rate-wrap" style="display:${currentInstr==='custom'?'block':'none'}">
-      <div class="fg" style="margin-bottom:0">
-        <label>Custom Return Rate (% p.a.)</label>
-        <input id="w-custom-rate" type="number" placeholder="12" min="1" max="30" step="0.5" value="${wz.customRate||12}" oninput="onCustomRateChange()">
+    <div class="selected-rate-display" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; align-items: stretch; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rs); padding: 0.85rem 1rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <span style="font-size: 0.8rem; color: var(--text2); font-weight: 500;">Expected Return Rate:</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <input id="w-custom-rate" type="number" min="1" max="30" step="0.1" style="width: 82px; background: var(--bg); border: 1px solid var(--border2); border-radius: var(--rs); padding: 0.4rem 0.5rem; color: var(--gold); font-family: 'Sora', sans-serif; font-size: 0.95rem; font-weight: 600; text-align: center; outline: none;" oninput="onCustomRateInput()">
+          <span style="color: var(--text2); font-size: 0.85rem">% p.a.</span>
+        </div>
       </div>
-    </div>`;
-
-  // Selected rate display
-  const selectedRate = currentInstr === 'auto' ? autoRateStr : (currentInstr === 'custom' ? (wz.customRate||12)+'% p.a.' : (INSTRUMENTS.find(i=>i.id===currentInstr)?.rate||0)+'% p.a.');
-  html += `
-    <div class="selected-rate-display" id="selected-rate-display">
-      <span>Selected return rate:</span>
-      <b id="selected-rate-val">${selectedRate}</b>
+      <div id="rate-reset-wrap" style="display: none; justify-content: space-between; align-items: center; font-size: 0.72rem; border-top: 1px dashed var(--border); padding-top: 0.5rem; margin-top: 0.2rem;">
+        <span id="rate-status-text" style="color: var(--text2); font-style: italic;">⚠️ Customized rate</span>
+        <button id="btn-reset-rate" onclick="resetToDefaultRate()" style="background: transparent; border: none; color: var(--gold); cursor: pointer; font-size: 0.72rem; text-decoration: underline; padding: 0; font-family: inherit;">Reset to default</button>
+      </div>
     </div>`;
 
   // Horizon warning
@@ -1515,6 +1538,7 @@ function fillStep3(){
   }
 
   document.getElementById('s3-content').innerHTML = html;
+  updateRateInputAndUI();
 }
 
 function selectInstr(id) {
@@ -1532,19 +1556,9 @@ function selectInstr(id) {
     triggerDangerFlash(el);
   }
 
-  // Show/hide custom rate input
-  document.getElementById('custom-rate-wrap').style.display = id === 'custom' ? 'block' : 'none';
-
-  // Update selected rate display
-  const st = wz.strat || strategy(wz.years);
-  let rateStr;
-  if (id === 'auto') rateStr = st.rateStr;
-  else if (id === 'custom') rateStr = (wz.customRate || 12) + '% p.a.';
-  else {
-    const instr = INSTRUMENTS.find(i => i.id === id);
-    rateStr = instr ? instr.rate + '% p.a.' : st.rateStr;
-  }
-  document.getElementById('selected-rate-val').textContent = rateStr;
+  // Clicking a different instrument clears the custom override and uses its default rate first
+  wz.customRate = null;
+  updateRateInputAndUI();
 
   // Horizon warning
   const warning = getHorizonWarning(wz.years, id);
@@ -1605,10 +1619,47 @@ function selectInstr(id) {
   }
 }
 
-function onCustomRateChange() {
-  const v = parseFloat(document.getElementById('w-custom-rate').value) || 12;
-  wz.customRate = v;
-  document.getElementById('selected-rate-val').textContent = v + '% p.a.';
+function updateRateInputAndUI() {
+  const rateInput = document.getElementById('w-custom-rate');
+  const resetWrap = document.getElementById('rate-reset-wrap');
+  if (!rateInput) return;
+
+  const currentInstr = wz.instrument || 'auto';
+  const st = wz.strat || strategy(wz.years);
+  
+  if (wz.customRate !== undefined && wz.customRate !== null) {
+    rateInput.value = wz.customRate;
+    if (resetWrap) resetWrap.style.display = 'flex';
+  } else {
+    // Get standard rate for instrument
+    let standardRate = 12;
+    if (currentInstr === 'auto') {
+      standardRate = parseFloat((st.rate * 100).toFixed(1));
+    } else if (currentInstr === 'custom') {
+      standardRate = 12;
+    } else {
+      const instr = INSTRUMENTS.find(i => i.id === currentInstr);
+      standardRate = instr ? instr.rate : 12;
+    }
+    rateInput.value = standardRate;
+    if (resetWrap) resetWrap.style.display = 'none';
+  }
+}
+
+function onCustomRateInput() {
+  const rateInput = document.getElementById('w-custom-rate');
+  if (!rateInput) return;
+  const val = parseFloat(rateInput.value);
+  if (!isNaN(val) && val >= 1 && val <= 30) {
+    wz.customRate = val;
+    const resetWrap = document.getElementById('rate-reset-wrap');
+    if (resetWrap) resetWrap.style.display = 'flex';
+  }
+}
+
+function resetToDefaultRate() {
+  wz.customRate = null;
+  updateRateInputAndUI();
 }
 
 // ── STEP 4 – SIP WITH STEP-UP ────────────────────────────────────────────
@@ -1833,16 +1884,22 @@ function renderStepUpComparison(sipNoStepUp, sipWithStepUp, stepUpRate) {
 // ── STANDALONE CALCULATOR ──────────────────────────────────────────────────
 function calcInstrChange() {
   const v = document.getElementById('c-instr').value;
-  document.getElementById('c-custom-wrap').style.display = v === 'custom' ? 'block' : 'none';
+  const yrs = parseFloat(document.getElementById('c-years').value) || 10;
+  let rate = 12;
+  if (v === 'auto') {
+    rate = parseFloat((strategy(yrs).rate * 100).toFixed(1));
+  } else if (v === 'custom') {
+    rate = parseFloat(document.getElementById('c-custom-rate').value) || 12;
+  } else {
+    const instr = INSTRUMENTS.find(i => i.id === v);
+    rate = instr ? instr.rate : 12;
+  }
+  document.getElementById('c-custom-rate').value = rate;
   calcUpdate();
 }
 
 function getCalcRate(yrs) {
-  const instrId = document.getElementById('c-instr').value;
-  if (instrId === 'auto') return strategy(yrs).rate;
-  if (instrId === 'custom') return (parseFloat(document.getElementById('c-custom-rate').value) || 12) / 100;
-  const instr = INSTRUMENTS.find(i => i.id === instrId);
-  return instr ? instr.rate / 100 : strategy(yrs).rate;
+  return (parseFloat(document.getElementById('c-custom-rate').value) || 12) / 100;
 }
 
 function calcUpdate(){
@@ -1853,12 +1910,18 @@ function calcUpdate(){
   const th=document.getElementById('c-target-hint'), yh=document.getElementById('c-years-hint');
   const res=document.getElementById('c-result'), cw=document.getElementById('c-chart-wrap');
   if(tgt) th.textContent=fmt(tgt); else th.textContent='';
+
+  // Dynamically update the return rate input if auto is selected and years to goal change
+  const instrId = document.getElementById('c-instr').value;
+  if (instrId === 'auto' && yrs > 0 && document.activeElement !== document.getElementById('c-custom-rate')) {
+    document.getElementById('c-custom-rate').value = parseFloat((strategy(yrs).rate * 100).toFixed(1));
+  }
+
   if(!tgt||!yrs){res.innerHTML='<div style="text-align:center;color:var(--text3);font-size:.82rem;padding:1rem 0;">Enter target amount and years to see your plan</div>';cw.style.display='none';return;}
 
   const rate = getCalcRate(yrs);
   const rateStr = (rate * 100).toFixed(1) + '% p.a.';
   const st = strategy(yrs);
-  const instrId = document.getElementById('c-instr').value;
   const isAuto = instrId === 'auto';
   const instrObj = INSTRUMENTS.find(i => i.id === instrId);
   const instrLabel = isAuto ? st.label : (instrId === 'custom' ? 'Custom' : (instrObj ? instrObj.name : st.label));
