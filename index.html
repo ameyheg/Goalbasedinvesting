@@ -56,6 +56,10 @@ main{max-width:1180px;margin:0 auto;padding:2rem 1.5rem 8rem;}
 .goal-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;transition:transform .2s,border-color .25s,box-shadow .2s;animation:fadeUp .35s ease both;position:relative;overflow:hidden;}
 .goal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,var(--gold));}
 .goal-card:hover{transform:translateY(-3px);border-color:var(--c,var(--gold));box-shadow:0 14px 40px rgba(0,0,0,.35);}
+.goal-card.card-pulse-danger{border-color:rgba(248,113,113,.4) !important;animation:cardDangerPulse 2s ease-in-out infinite !important;}
+.goal-card.card-pulse-danger::before{animation:topBarPulse 2s ease-in-out infinite !important;}
+@keyframes cardDangerPulse{0%,100%{border-color:rgba(248,113,113,.25);box-shadow:0 0 0 0 rgba(248,113,113,0);background:var(--bg2);}50%{border-color:rgba(248,113,113,.6);box-shadow:0 0 24px 4px rgba(248,113,113,.15);background:rgba(248,113,113,.03);}}
+@keyframes topBarPulse{0%,100%{opacity:.6;}50%{opacity:1;}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 .card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.2rem;}
 .card-left{display:flex;align-items:center;gap:10px;}
@@ -86,7 +90,24 @@ main{max-width:1180px;margin:0 auto;padding:2rem 1.5rem 8rem;}
 .chip-debt{background:var(--gold-dim);color:var(--gold);border-color:rgba(245,166,35,.18);}
 .chip-equity{background:var(--green-d);color:var(--green);border-color:rgba(15,207,140,.18);}
 .chip-noequity{background:var(--red-d);color:var(--red);border-color:rgba(248,113,113,.18);}
+.chip-stepup{background:rgba(96,165,250,.12);color:var(--blue);border-color:rgba(96,165,250,.2);}
+.chip-instr{background:var(--purple-d);color:var(--purple);border-color:rgba(167,139,250,.2);}
+.chip-limit{background:rgba(251,146,60,.1);color:#fb923c;border-color:rgba(251,146,60,.2);}
+.chip-age{background:rgba(168,85,247,.1);color:#a855f7;border-color:rgba(168,85,247,.2);}
+.chip-girl{background:rgba(244,114,182,.1);color:#f472b6;border-color:rgba(244,114,182,.2);}
+.chip-danger{background:rgba(248,113,113,.18);color:var(--red);border-color:rgba(248,113,113,.35);font-weight:600;animation:chipPulse 2s ease-in-out infinite;}
+@keyframes chipPulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(248,113,113,0);}50%{opacity:.85;box-shadow:0 0 8px 2px rgba(248,113,113,.3);}}
+.card-danger-banner{background:var(--red-d);border:1px solid rgba(248,113,113,.3);border-radius:var(--rs);padding:.4rem .7rem;font-size:.72rem;color:var(--red);margin-top:.6rem;display:flex;align-items:center;gap:6px;line-height:1.4;}
+.card-danger-banner strong{color:#fca5a5;}
 .on-track{background:var(--green-d);border:1px solid rgba(15,207,140,.2);border-radius:var(--rs);padding:.45rem .75rem;font-size:.78rem;color:var(--green);text-align:center;font-weight:500;}
+.instr-info-box{border-radius:var(--rs);padding:.7rem .9rem;font-size:.76rem;line-height:1.65;margin-top:.75rem;}
+.instr-info-box.info-ppf{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);color:var(--text2);}
+.instr-info-box.info-ssy{background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.2);color:var(--text2);}
+.instr-info-box.info-scss{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);color:var(--text2);}
+.instr-info-box strong{color:var(--text);}
+.instr-info-box .info-title{font-weight:600;color:var(--gold);margin-bottom:.3rem;display:block;font-size:.78rem;}
+.limit-warn{background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.25);border-radius:var(--rs);padding:.6rem .85rem;font-size:.76rem;color:#fb923c;line-height:1.55;margin-top:.65rem;}
+.limit-warn strong{color:#f59e0b;}
 .empty{text-align:center;padding:4rem 1rem;display:none;}
 .empty-ico{font-size:2.5rem;opacity:.35;margin-bottom:.8rem;}
 .empty h3{font-family:'Sora',sans-serif;font-size:1rem;color:var(--text2);}
@@ -183,6 +204,27 @@ main{max-width:1180px;margin:0 auto;padding:2rem 1.5rem 8rem;}
 .rule-box.no-equity{background:var(--red-d);border:1px solid rgba(248,113,113,.25);color:var(--red);}
 .rule-box.yes-equity{background:var(--green-d);border:1px solid rgba(15,207,140,.25);color:var(--green);}
 
+/* Step 3 – Instrument Selector */
+.instr-section-title{font-family:'Sora',sans-serif;font-size:.82rem;font-weight:600;color:var(--text2);margin-top:1.3rem;margin-bottom:.6rem;display:flex;align-items:center;gap:6px;}
+.instr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:.75rem;}
+.instr-option{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rs);padding:.55rem .45rem;cursor:pointer;transition:all .18s;text-align:center;position:relative;}
+.instr-option:hover{border-color:var(--text3);background:var(--bg3);}
+.instr-option.sel{border-color:var(--gold);background:var(--gold-dim);box-shadow:0 0 0 1px rgba(245,166,35,.25);}
+.instr-option.danger-sel{border-color:var(--red) !important;background:rgba(248,113,113,.12) !important;box-shadow:0 0 0 2px rgba(248,113,113,.35) !important;}
+@keyframes dangerFlash{0%,100%{box-shadow:0 0 0 2px rgba(248,113,113,.15);}25%{box-shadow:0 0 18px 4px rgba(248,113,113,.55);border-color:#f87171;}50%{box-shadow:0 0 0 2px rgba(248,113,113,.2);}75%{box-shadow:0 0 18px 4px rgba(248,113,113,.45);border-color:#f87171;}}
+@keyframes dangerPulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.85;transform:scale(1.01);}}
+.danger-flash{animation:dangerFlash .8s ease 2 !important;}
+.warn-note.danger-flash{animation:dangerPulse .4s ease 3 !important;background:rgba(248,113,113,.18) !important;border-color:rgba(248,113,113,.4) !important;}
+.modal.danger-border{animation:dangerFlash .6s ease 2 !important;border-color:var(--red) !important;}
+.io-icon{font-size:1.05rem;margin-bottom:.15rem;}
+.io-name{font-size:.62rem;font-weight:600;color:var(--text);line-height:1.2;margin-bottom:.1rem;}
+.io-rate{font-family:'Sora',sans-serif;font-size:.7rem;font-weight:700;color:var(--gold);}
+.io-desc{font-size:.52rem;color:var(--text3);margin-top:.1rem;line-height:1.2;}
+.custom-rate-wrap{margin-top:.6rem;}
+.warn-note{background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.25);border-radius:var(--rs);padding:.5rem .75rem;font-size:.73rem;color:#fb923c;margin-top:.65rem;line-height:1.5;}
+.selected-rate-display{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:.6rem .85rem;margin-top:.65rem;font-size:.78rem;color:var(--text2);display:flex;justify-content:space-between;align-items:center;}
+.selected-rate-display b{color:var(--gold);font-family:'Sora',sans-serif;}
+
 /* Step 4 – SIP */
 .sip-hero{text-align:center;padding:1.4rem;background:var(--bg3);border-radius:var(--r);margin-bottom:1rem;border:1px solid var(--border);}
 .sip-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text2);margin-bottom:.35rem;}
@@ -195,6 +237,27 @@ main{max-width:1180px;margin:0 auto;padding:2rem 1.5rem 8rem;}
 .journey-strip{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:.7rem 1rem;margin-bottom:.85rem;display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;font-size:.73rem;color:var(--text2);}
 .j-step{color:var(--text);font-weight:500;}
 .j-arr{color:var(--text3);}
+
+/* Step 4 – Step-up SIP */
+.stepup-ctrl{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.1rem;margin:1rem 0;}
+.stepup-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem;}
+.stepup-title{font-size:.82rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;}
+.stepup-right{display:flex;align-items:center;gap:5px;}
+.stepup-input{width:56px;background:var(--bg);border:1px solid var(--border2);border-radius:var(--rs);padding:.35rem .4rem;color:var(--gold);font-family:'Sora',sans-serif;font-size:.88rem;font-weight:600;text-align:center;outline:none;}
+.stepup-input:focus{border-color:var(--gold);}
+.quick-btns{display:flex;gap:4px;margin:.45rem 0 .65rem;}
+.quick-btn{padding:.28rem .65rem;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--text2);font-size:.7rem;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.quick-btn:hover,.quick-btn.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+.sip-compare{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin:.65rem 0;}
+.cmp-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:.65rem .75rem;text-align:center;}
+.cmp-label{font-size:.62rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:.15rem;}
+.cmp-val{font-family:'Sora',sans-serif;font-size:1.05rem;font-weight:600;}
+.cmp-badge{font-size:.68rem;padding:2px 8px;border-radius:4px;margin-top:.25rem;display:inline-block;}
+.yr-table-wrap{max-height:180px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--rs);margin-top:.5rem;}
+.yr-table{width:100%;border-collapse:collapse;font-size:.7rem;}
+.yr-table th{position:sticky;top:0;background:var(--bg3);text-align:left;padding:.4rem .5rem;border-bottom:1px solid var(--border);color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:.05em;font-size:.6rem;}
+.yr-table td{padding:.35rem .5rem;border-bottom:1px solid var(--border);color:var(--text);}
+.yr-table tr:last-child td{border-bottom:none;}
 
 /* Wizard nav */
 .wizard-nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.25rem;padding-top:1.1rem;border-top:1px solid var(--border);}
@@ -218,6 +281,51 @@ main{max-width:1180px;margin:0 auto;padding:2rem 1.5rem 8rem;}
   .stats-row{grid-template-columns:1fr 1fr;}
   .stat-value{font-size:1.2rem;}
   .wizard-steps .ws-label{display:none;}
+  .instr-grid{grid-template-columns:repeat(2,1fr);}
+}
+
+/* ONBOARDING MODAL */
+.ob-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;z-index:300;padding:1rem;opacity:0;pointer-events:none;transition:opacity .25s;}
+.ob-overlay.open{opacity:1;pointer-events:all;}
+.ob-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:2rem;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;transform:translateY(20px) scale(.96);transition:transform .3s ease;}
+.ob-overlay.open .ob-modal{transform:translateY(0) scale(1);}
+.ob-hero{text-align:center;margin-bottom:1.5rem;}
+.ob-hero-icon{font-size:2.5rem;margin-bottom:.5rem;}
+.ob-hero h2{font-family:'Sora',sans-serif;font-size:1.3rem;font-weight:700;background:linear-gradient(90deg,var(--text),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.ob-hero p{color:var(--text2);font-size:.82rem;margin-top:.3rem;}
+.ob-section{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.1rem;margin-bottom:.85rem;}
+.ob-section-title{font-family:'Sora',sans-serif;font-size:.78rem;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;display:flex;align-items:center;gap:6px;}
+.ob-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.65rem;}
+.ob-row.single{grid-template-columns:1fr;}
+.ob-field label{display:block;font-size:.68rem;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:.35rem;}
+.ob-field input,.ob-field select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:.6rem .85rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;transition:border-color .15s;-webkit-appearance:none;}
+.ob-field input:focus,.ob-field select:focus{border-color:var(--gold);}
+.ob-field select option{background:var(--bg2);}
+.ob-daughters-list{display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem;}
+.ob-daughter-row{display:flex;align-items:center;gap:.6rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:.5rem .7rem;}
+.ob-daughter-row .d-label{font-size:.75rem;color:var(--text2);white-space:nowrap;min-width:80px;}
+.ob-daughter-row input{flex:1;background:transparent;border:1px solid var(--border2);border-radius:var(--rs);padding:.4rem .6rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;width:60px;}
+.ob-daughter-row input:focus{border-color:var(--gold);}
+.ob-daughter-row .d-status{font-size:.65rem;padding:2px 7px;border-radius:4px;font-weight:500;white-space:nowrap;}
+.ob-daughter-row .d-status.eligible{background:var(--green-d);color:var(--green);}
+.ob-daughter-row .d-status.ineligible{background:var(--red-d);color:var(--red);}
+.ob-eligibility{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.1rem;margin-bottom:1rem;}
+.ob-elig-title{font-family:'Sora',sans-serif;font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:.6rem;}
+.ob-elig-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;}
+.ob-elig-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:.6rem .5rem;text-align:center;}
+.ob-elig-card .elig-icon{font-size:1.1rem;margin-bottom:.15rem;}
+.ob-elig-card .elig-name{font-size:.62rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text2);margin-bottom:.15rem;}
+.ob-elig-card .elig-count{font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;}
+.ob-elig-card .elig-detail{font-size:.58rem;color:var(--text3);margin-top:.1rem;}
+.btn-ob-save{width:100%;background:var(--gold);color:#1a0900;border:none;border-radius:var(--rs);padding:.72rem 1rem;font-family:'Sora',sans-serif;font-size:.92rem;font-weight:600;cursor:pointer;transition:opacity .2s,transform .15s;box-shadow:0 4px 16px rgba(245,166,35,.3);}
+.btn-ob-save:hover{opacity:.88;transform:translateY(-1px);}
+.btn-profile{background:transparent;border:1px solid var(--border);border-radius:var(--rs);padding:.35rem .7rem;font-family:'DM Sans',sans-serif;font-size:.72rem;color:var(--text2);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;}
+.btn-profile:hover{background:var(--bg3);border-color:var(--gold);color:var(--gold);}
+.profile-summary{font-size:.72rem;color:var(--text3);display:flex;align-items:center;gap:12px;}
+@media(max-width:640px){
+  .ob-elig-grid{grid-template-columns:1fr 1fr 1fr;}
+  .ob-row{grid-template-columns:1fr;}
+  .profile-summary{display:none;}
 }
 </style>
 </head>
@@ -225,8 +333,93 @@ main{max-width:1180px;margin:0 auto;padding:2rem 1.5rem 8rem;}
 
 <header>
   <div class="logo"><div class="logo-ring">₹</div>FinGoal</div>
-  <div class="header-tag">Goal-Based Investing Planner</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="profile-summary" id="profile-summary"></div>
+    <button class="btn-profile" id="btn-edit-profile" onclick="openOnboarding(true)" style="display:none">👤 Edit Profile</button>
+    <div class="header-tag">Goal-Based Investing Planner</div>
+  </div>
 </header>
+
+<!-- ONBOARDING MODAL -->
+<div class="ob-overlay" id="ob-overlay">
+  <div class="ob-modal">
+    <div class="ob-hero">
+      <div class="ob-hero-icon">👨‍👩‍👧‍👦</div>
+      <h2>Welcome to FinGoal</h2>
+      <p>Tell us about your family so we can show the right investment options</p>
+    </div>
+
+    <div class="ob-section">
+      <div class="ob-section-title">👤 About You</div>
+      <div class="ob-row">
+        <div class="ob-field">
+          <label>Marital Status</label>
+          <select id="ob-marital" onchange="onObMaritalChange()">
+            <option value="single">Unmarried</option>
+            <option value="married">Married</option>
+          </select>
+        </div>
+        <div class="ob-field">
+          <label>Your Age</label>
+          <input id="ob-self-age" type="number" placeholder="30" min="18" max="100" oninput="updateObEligibility()">
+        </div>
+      </div>
+      <div class="ob-row" id="ob-spouse-row" style="display:none">
+        <div class="ob-field">
+          <label>Spouse's Age</label>
+          <input id="ob-spouse-age" type="number" placeholder="28" min="18" max="100" oninput="updateObEligibility()">
+        </div>
+        <div class="ob-field"></div>
+      </div>
+    </div>
+
+    <div class="ob-section">
+      <div class="ob-section-title">👧 Children</div>
+      <div class="ob-row">
+        <div class="ob-field">
+          <label>Number of Daughters</label>
+          <select id="ob-daughters" onchange="onObDaughtersChange()">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3+</option>
+          </select>
+        </div>
+        <div class="ob-field">
+          <label style="visibility:hidden">-</label>
+          <div style="font-size:.7rem;color:var(--text3);padding-top:.3rem">SSY: max 2 per family. New accounts<br>for girls under 10. Existing accounts stay active.</div>
+        </div>
+      </div>
+      <div class="ob-daughters-list" id="ob-daughters-list"></div>
+    </div>
+
+    <div class="ob-eligibility" id="ob-eligibility">
+      <div class="ob-elig-title">📋 Your Family's Eligibility</div>
+      <div class="ob-elig-grid" id="ob-elig-grid">
+        <div class="ob-elig-card">
+          <div class="elig-icon">🏛️</div>
+          <div class="elig-name">PPF</div>
+          <div class="elig-count" id="ob-ppf-count" style="color:var(--gold)">—</div>
+          <div class="elig-detail" id="ob-ppf-detail">Fill details above</div>
+        </div>
+        <div class="ob-elig-card">
+          <div class="elig-icon">👧</div>
+          <div class="elig-name">SSY</div>
+          <div class="elig-count" id="ob-ssy-count" style="color:#f472b6">—</div>
+          <div class="elig-detail" id="ob-ssy-detail">Fill details above</div>
+        </div>
+        <div class="ob-elig-card">
+          <div class="elig-icon">👴</div>
+          <div class="elig-name">SCSS</div>
+          <div class="elig-count" id="ob-scss-count" style="color:#a855f7">—</div>
+          <div class="elig-detail" id="ob-scss-detail">Fill details above</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-ob-save" onclick="saveOnboarding()">Continue to FinGoal →</button>
+  </div>
+</div>
 
 <main>
   <div class="hero">
@@ -296,6 +489,39 @@ main{max-width:1180px;margin:0 auto;padding:2rem 1.5rem 8rem;}
         <div class="calc-field">
           <label class="calc-label">Current Savings (₹)</label>
           <div class="rp-wrap"><input class="calc-input" id="c-savings" type="number" placeholder="0" min="0" step="1000" value="0" oninput="calcUpdate()"></div>
+        </div>
+        <div class="calc-field">
+          <label class="calc-label">Investment Instrument</label>
+          <select class="calc-input" id="c-instr" onchange="calcInstrChange()">
+            <option value="auto">Auto (Based on Horizon)</option>
+            <option value="ppf">PPF – 7.1%</option>
+            <option value="ssy">Sukanya Samriddhi – 8.2%</option>
+            <option value="epf">EPF / VPF – 8.25%</option>
+            <option value="fd">Bank FD – 7%</option>
+            <option value="rd">Recurring Deposit – 7%</option>
+            <option value="debt_mf">Debt Mutual Funds – 7.5%</option>
+            <option value="gold">Gold / Gold MF – 8%</option>
+            <option value="scss">Sr. Citizen Savings (SCSS) – 8.2%</option>
+            <option value="con_hybrid">Conservative Hybrid – 8.5%</option>
+            <option value="bal_adv">Balanced Advantage – 9.5%</option>
+            <option value="nps">NPS (Aggressive) – 10%</option>
+            <option value="large_cap">Large Cap Equity MF – 11%</option>
+            <option value="index">Index Fund (Nifty 50) – 12%</option>
+            <option value="flexi_cap">Flexi Cap MF – 12%</option>
+            <option value="elss">ELSS Tax Saver – 12%</option>
+            <option value="mid_cap">Mid Cap Equity MF – 14%</option>
+            <option value="small_cap">Small Cap Equity MF – 15%</option>
+            <option value="custom">Custom Rate</option>
+          </select>
+        </div>
+        <div class="calc-field" id="c-custom-wrap" style="display:none">
+          <label class="calc-label">Custom Return Rate (% p.a.)</label>
+          <input class="calc-input" id="c-custom-rate" type="number" placeholder="12" min="1" max="30" step="0.5" value="12" oninput="calcUpdate()">
+        </div>
+        <div class="calc-field">
+          <label class="calc-label">Annual SIP Step-up (%)</label>
+          <input class="calc-input" id="c-stepup" type="number" placeholder="0" min="0" max="25" step="1" value="0" oninput="calcUpdate()">
+          <div class="fhint">Increase SIP by this % every year</div>
         </div>
       </div>
       <div>
@@ -443,7 +669,7 @@ main{max-width:1180px;margin:0 auto;padding:2rem 1.5rem 8rem;}
       <div class="step-hed">
         <div class="step-num-label">Step 3 of 4</div>
         <div class="step-title">How should you invest?</div>
-        <div class="step-desc">Your time horizon determines the right investment type</div>
+        <div class="step-desc">Choose an investment instrument or use our recommendation</div>
       </div>
       <div id="s3-content"></div>
     </div>
@@ -485,10 +711,307 @@ const INF_REASON = {
   other:'General inflation ~6% per year',
 };
 
+// ── INSTRUMENTS ────────────────────────────────────────────────────────────
+const INSTRUMENTS = [
+  {id:'auto',       name:'Auto (Recommended)',      rate:null,  icon:'🤖', desc:'Based on time horizon',     equity:false},
+  {id:'ppf',        name:'PPF',                     rate:7.1,   icon:'🏛️', desc:'Govt backed, 15yr lock-in', equity:false},
+  {id:'ssy',        name:'Sukanya Samriddhi',       rate:8.2,   icon:'👧', desc:'Girl child, 21yr maturity', equity:false},
+  {id:'epf',        name:'EPF / VPF',               rate:8.25,  icon:'🏭', desc:'Salaried employees',        equity:false},
+  {id:'fd',         name:'Bank FD',                 rate:7.0,   icon:'🏦', desc:'Fixed return, flexible',    equity:false},
+  {id:'rd',         name:'Recurring Deposit',       rate:7.0,   icon:'💰', desc:'Monthly fixed deposits',    equity:false},
+  {id:'debt_mf',    name:'Debt Mutual Funds',       rate:7.5,   icon:'📊', desc:'Tax efficient debt',        equity:false},
+  {id:'gold',       name:'Gold / Gold MF',          rate:8.0,   icon:'🥇', desc:'Inflation hedge',           equity:false},
+  {id:'scss',       name:'Sr. Citizen Savings',     rate:8.2,   icon:'👴', desc:'Age 60+, 5yr tenure',       equity:false},
+  {id:'con_hybrid', name:'Conservative Hybrid',     rate:8.5,   icon:'⚖️', desc:'75–90% debt + equity',      equity:false},
+  {id:'bal_adv',    name:'Balanced Advantage',      rate:9.5,   icon:'⚖️', desc:'Dynamic equity alloc.',     equity:true},
+  {id:'nps',        name:'NPS (Aggressive)',        rate:10.0,  icon:'🏛️', desc:'Retirement, tax benefit',   equity:true},
+  {id:'large_cap',  name:'Large Cap Equity',        rate:11.0,  icon:'📈', desc:'Top 100 companies',         equity:true},
+  {id:'index',      name:'Index Fund (Nifty 50)',   rate:12.0,  icon:'📊', desc:'Market-tracking, low cost', equity:true},
+  {id:'flexi_cap',  name:'Flexi Cap MF',            rate:12.0,  icon:'📈', desc:'All cap sizes',             equity:true},
+  {id:'elss',       name:'ELSS Tax Saver',          rate:12.0,  icon:'🏷️', desc:'3yr lock-in, 80C benefit', equity:true},
+  {id:'mid_cap',    name:'Mid Cap Equity MF',       rate:14.0,  icon:'🚀', desc:'High growth, higher risk',  equity:true},
+  {id:'small_cap',  name:'Small Cap Equity MF',     rate:15.0,  icon:'🔥', desc:'Highest growth potential',  equity:true},
+  {id:'custom',     name:'Custom Rate',             rate:null,  icon:'✏️', desc:'Enter your own rate',       equity:false},
+];
+
+// ── INSTRUMENT CONSTRAINTS ────────────────────────────────────────────────
+const INSTR_CONSTRAINTS = {
+  ppf: {
+    annualLimit: 150000,
+    maxAccountsPerFamily: 2,
+    info: `<span class="info-title">🏛️ PPF – Public Provident Fund</span>
+      <strong>Annual Limit:</strong> ₹1,50,000 per account per year<br>
+      <strong>Accounts:</strong> 1 per person (couple can have 2 accounts = ₹3L/yr family max)<br>
+      <strong>Lock-in:</strong> 15 years (partial withdrawal from Year 7)<br>
+      <strong>Tax:</strong> EEE — fully exempt under 80C`
+  },
+  ssy: {
+    annualLimit: 150000,
+    maxAccountsPerFamily: 2,
+    info: `<span class="info-title">👧 Sukanya Samriddhi Yojana (SSY)</span>
+      <strong>Eligibility:</strong> Girl child only — max 2 accounts per family (1 per girl child)<br>
+      <strong>Annual Limit:</strong> ₹1,50,000 per account per year<br>
+      <strong>Maturity:</strong> 21 years from account opening<br>
+      <strong>Partial Withdrawal:</strong> Up to 50% of balance once the girl turns 18 or passes Class 10 (whichever is earlier) — for higher education or marriage<br>
+      <strong>Tax:</strong> EEE — fully exempt under 80C`
+  },
+  scss: {
+    maxDeposit: 3000000,
+    info: `<span class="info-title">👴 Senior Citizen Savings Scheme (SCSS)</span>
+      <strong>Eligibility:</strong> Age 60+ only (55+ for retired defence personnel)<br>
+      <strong>Max Deposit:</strong> ₹30 lakh total<br>
+      <strong>Tenure:</strong> 5 years (extendable by 3 years)<br>
+      <strong>Interest:</strong> Quarterly payout<br>
+      <strong>Tax:</strong> Deduction under 80C; interest is taxable`
+  }
+};
+
+function getInstrConstraintInfo(instrId) {
+  return INSTR_CONSTRAINTS[instrId] || null;
+}
+
+// Calculate how many goals already use a given instrument
+function countGoalsUsingInstrument(instrId, excludeGoalId) {
+  return goals.filter(g => g.instrument === instrId && g.id !== excludeGoalId).length;
+}
+
+// Get annual SIP for all goals using a given instrument (excluding one goal)
+function getTotalAnnualSIPForInstrument(instrId, excludeGoalId) {
+  return goals.filter(g => g.instrument === instrId && g.id !== excludeGoalId)
+    .reduce((sum, g) => {
+      const rate = getGoalRate(g);
+      const sip = sipNeeded(g.target, g.savings, g.years, rate, g.savingsRate || 0.04, g.stepUp || 0);
+      return sum + (sip > 0 ? sip * 12 : 0);
+    }, 0);
+}
+
 // ── STATE ──────────────────────────────────────────────────────────────────
 let goals = [];
 let calcChart = null;
-let wz = {step:1,id:null,name:'',category:'education',currentValue:0,monthlyExpenses:0,years:0,savings:0,savingsRate:0.04,inflation:8,futureValue:0,strat:null,sip:0};
+let familyProfile = null; // {marital, selfAge, spouseAge, daughters: [{age}], ppfAccounts, ssyAccounts, scssEligible}
+let wz = {step:1,id:null,name:'',category:'education',currentValue:0,monthlyExpenses:0,years:0,savings:0,savingsRate:0.04,inflation:8,futureValue:0,strat:null,sip:0,instrument:'auto',customRate:12,stepUp:0};
+
+// ── FAMILY PROFILE & ELIGIBILITY ──────────────────────────────────────────
+function loadFamilyProfile() {
+  try {
+    const d = localStorage.getItem('fingoal_family');
+    if (d) familyProfile = JSON.parse(d);
+  } catch(_) {}
+}
+
+function saveFamilyProfile() {
+  try { localStorage.setItem('fingoal_family', JSON.stringify(familyProfile)); } catch(_) {}
+}
+
+function calcEligibility(profile) {
+  if (!profile) return { ppfAccounts: 0, ssyAccounts: 0, ssyNewEligible: 0, ssyExisting: 0, scssEligible: false, scssWho: '' };
+  // PPF: 1 per person
+  const ppfAccounts = profile.marital === 'married' ? 2 : 1;
+  // SSY: count existing accounts + new eligible (under 10), max 2 total
+  let ssyExisting = 0;
+  let ssyNewEligible = 0;
+  const ssyEligibleDaughters = [];
+  if (profile.daughters && profile.daughters.length > 0) {
+    profile.daughters.forEach((d, i) => {
+      if (d.ssyOpened) {
+        // Already has an SSY account (opened when under 10) — still active
+        ssyExisting++;
+        ssyEligibleDaughters.push(i);
+      } else if (d.age !== null && d.age !== undefined && d.age < 10 && (ssyExisting + ssyNewEligible) < 2) {
+        // Can open a new SSY account
+        ssyNewEligible++;
+        ssyEligibleDaughters.push(i);
+      }
+    });
+  }
+  const ssyAccounts = Math.min(2, ssyExisting + ssyNewEligible);
+  // SCSS: any family member 60+
+  let scssEligible = false;
+  let scssWho = '';
+  if (profile.selfAge >= 60) { scssEligible = true; scssWho = 'Self'; }
+  if (profile.marital === 'married' && profile.spouseAge >= 60) {
+    scssEligible = true;
+    scssWho = scssWho ? 'Both' : 'Spouse';
+  }
+  return { ppfAccounts, ssyAccounts, ssyNewEligible, ssyExisting, ssyEligibleDaughters, scssEligible, scssWho };
+}
+
+function getEligibility() {
+  return calcEligibility(familyProfile);
+}
+
+function openOnboarding(isEdit) {
+  document.getElementById('ob-overlay').classList.add('open');
+  if (isEdit && familyProfile) {
+    document.getElementById('ob-marital').value = familyProfile.marital || 'single';
+    document.getElementById('ob-self-age').value = familyProfile.selfAge || '';
+    document.getElementById('ob-spouse-age').value = familyProfile.spouseAge || '';
+    onObMaritalChange();
+    document.getElementById('ob-daughters').value = Math.min(3, (familyProfile.daughters || []).length);
+    onObDaughtersChange();
+    // Fill daughter ages and SSY status
+    (familyProfile.daughters || []).forEach((d, i) => {
+      const el = document.getElementById('ob-d-age-' + i);
+      if (el) el.value = d.age !== null ? d.age : '';
+      const ssyEl = document.getElementById('ob-d-ssy-' + i);
+      if (ssyEl) ssyEl.checked = !!d.ssyOpened;
+    });
+    updateObEligibility();
+  }
+}
+
+function onObMaritalChange() {
+  const m = document.getElementById('ob-marital').value;
+  document.getElementById('ob-spouse-row').style.display = m === 'married' ? 'grid' : 'none';
+  updateObEligibility();
+}
+
+function onObDaughtersChange() {
+  const n = parseInt(document.getElementById('ob-daughters').value) || 0;
+  const list = document.getElementById('ob-daughters-list');
+  const actualN = Math.min(n, 3);
+  let html = '';
+  for (let i = 0; i < actualN; i++) {
+    const existingDaughter = (familyProfile && familyProfile.daughters && familyProfile.daughters[i]) ? familyProfile.daughters[i] : null;
+    const existingAge = existingDaughter ? existingDaughter.age : '';
+    const ssyChecked = existingDaughter ? !!existingDaughter.ssyOpened : false;
+    html += `
+      <div class="ob-daughter-row" style="flex-wrap:wrap">
+        <span class="d-label">👧 Daughter ${i + 1}</span>
+        <input id="ob-d-age-${i}" type="number" placeholder="Age" min="0" max="21" value="${existingAge !== null && existingAge !== '' ? existingAge : ''}" oninput="updateObEligibility()">
+        <span class="d-status" id="ob-d-status-${i}"></span>
+        <label style="display:flex;align-items:center;gap:5px;width:100%;margin-top:.3rem;padding-left:90px;font-size:.68rem;color:var(--text2);cursor:pointer">
+          <input type="checkbox" id="ob-d-ssy-${i}" ${ssyChecked?'checked':''} onchange="updateObEligibility()" style="accent-color:var(--gold);cursor:pointer">
+          SSY account already opened
+        </label>
+      </div>`;
+  }
+  list.innerHTML = html;
+  updateObEligibility();
+}
+
+function updateObEligibility() {
+  const marital = document.getElementById('ob-marital').value;
+  const selfAge = parseInt(document.getElementById('ob-self-age').value) || 0;
+  const spouseAge = parseInt(document.getElementById('ob-spouse-age').value) || 0;
+  const nDaughters = parseInt(document.getElementById('ob-daughters').value) || 0;
+  const daughters = [];
+  for (let i = 0; i < Math.min(nDaughters, 3); i++) {
+    const ageEl = document.getElementById('ob-d-age-' + i);
+    const age = ageEl ? (ageEl.value !== '' ? parseInt(ageEl.value) : null) : null;
+    const ssyEl = document.getElementById('ob-d-ssy-' + i);
+    const ssyOpened = ssyEl ? ssyEl.checked : false;
+    daughters.push({ age, ssyOpened });
+  }
+
+  const tempProfile = { marital, selfAge, spouseAge, daughters };
+  const elig = calcEligibility(tempProfile);
+
+  // Update PPF display
+  document.getElementById('ob-ppf-count').textContent = selfAge ? elig.ppfAccounts + ' account' + (elig.ppfAccounts > 1 ? 's' : '') : '—';
+  document.getElementById('ob-ppf-detail').textContent = selfAge ? '₹' + (elig.ppfAccounts * 1.5).toFixed(1) + 'L/yr max' : 'Enter your age';
+
+  // Update SSY display
+  if (nDaughters > 0) {
+    document.getElementById('ob-ssy-count').textContent = elig.ssyAccounts + ' account' + (elig.ssyAccounts !== 1 ? 's' : '');
+    let ssyDetail = '';
+    if (elig.ssyAccounts > 0) {
+      const parts = [];
+      if (elig.ssyExisting > 0) parts.push(elig.ssyExisting + ' active');
+      if (elig.ssyNewEligible > 0) parts.push(elig.ssyNewEligible + ' can open');
+      ssyDetail = '₹' + (elig.ssyAccounts * 1.5).toFixed(1) + 'L/yr (' + parts.join(', ') + ')';
+    } else {
+      ssyDetail = 'No eligible daughters';
+    }
+    document.getElementById('ob-ssy-detail').textContent = ssyDetail;
+    // Update per-daughter status
+    for (let i = 0; i < Math.min(nDaughters, 3); i++) {
+      const statusEl = document.getElementById('ob-d-status-' + i);
+      if (statusEl && daughters[i]) {
+        if (daughters[i].ssyOpened) {
+          statusEl.textContent = '✓ SSY active';
+          statusEl.className = 'd-status eligible';
+        } else if (daughters[i].age !== null && daughters[i].age < 10) {
+          statusEl.textContent = '✓ Can open SSY';
+          statusEl.className = 'd-status eligible';
+        } else if (daughters[i].age !== null && daughters[i].age >= 10) {
+          statusEl.textContent = '✗ Age 10+ (can\'t open new)';
+          statusEl.className = 'd-status ineligible';
+        } else {
+          statusEl.textContent = '';
+          statusEl.className = 'd-status';
+        }
+      } else if (statusEl) {
+        statusEl.textContent = '';
+        statusEl.className = 'd-status';
+      }
+    }
+  } else {
+    document.getElementById('ob-ssy-count').textContent = 'N/A';
+    document.getElementById('ob-ssy-detail').textContent = 'No daughters';
+  }
+
+  // Update SCSS display
+  if (selfAge) {
+    if (elig.scssEligible) {
+      document.getElementById('ob-scss-count').textContent = '✓ Eligible';
+      document.getElementById('ob-scss-count').style.color = 'var(--green)';
+      document.getElementById('ob-scss-detail').textContent = elig.scssWho + ' is 60+';
+    } else {
+      document.getElementById('ob-scss-count').textContent = '✗ Not yet';
+      document.getElementById('ob-scss-count').style.color = 'var(--red)';
+      const yearsToSCCS = 60 - Math.max(selfAge, marital === 'married' ? spouseAge : 0);
+      document.getElementById('ob-scss-detail').textContent = yearsToSCCS > 0 ? yearsToSCCS + ' yrs to eligibility' : '';
+    }
+  } else {
+    document.getElementById('ob-scss-count').textContent = '—';
+    document.getElementById('ob-scss-count').style.color = '#a855f7';
+    document.getElementById('ob-scss-detail').textContent = 'Enter your age';
+  }
+}
+
+function saveOnboarding() {
+  const selfAge = parseInt(document.getElementById('ob-self-age').value) || 0;
+  if (!selfAge || selfAge < 18) {
+    document.getElementById('ob-self-age').style.borderColor = 'var(--red)';
+    document.getElementById('ob-self-age').focus();
+    return;
+  }
+  const marital = document.getElementById('ob-marital').value;
+  const spouseAge = marital === 'married' ? (parseInt(document.getElementById('ob-spouse-age').value) || 0) : 0;
+  if (marital === 'married' && (!spouseAge || spouseAge < 18)) {
+    document.getElementById('ob-spouse-age').style.borderColor = 'var(--red)';
+    document.getElementById('ob-spouse-age').focus();
+    return;
+  }
+  const nDaughters = parseInt(document.getElementById('ob-daughters').value) || 0;
+  const daughters = [];
+  for (let i = 0; i < Math.min(nDaughters, 3); i++) {
+    const ageEl = document.getElementById('ob-d-age-' + i);
+    const age = ageEl ? (ageEl.value !== '' ? parseInt(ageEl.value) : null) : null;
+    const ssyEl = document.getElementById('ob-d-ssy-' + i);
+    const ssyOpened = ssyEl ? ssyEl.checked : false;
+    daughters.push({ age, ssyOpened });
+  }
+  familyProfile = { marital, selfAge, spouseAge, daughters };
+  saveFamilyProfile();
+  document.getElementById('ob-overlay').classList.remove('open');
+  updateProfileHeader();
+  render(); // re-render goals with updated eligibility
+}
+
+function updateProfileHeader() {
+  const btn = document.getElementById('btn-edit-profile');
+  const summary = document.getElementById('profile-summary');
+  if (familyProfile) {
+    btn.style.display = 'flex';
+    const e = getEligibility();
+    summary.innerHTML = `PPF: <strong style="color:var(--gold)">${e.ppfAccounts}</strong> · SSY: <strong style="color:#f472b6">${e.ssyAccounts}</strong> · SCSS: <strong style="color:${e.scssEligible?'var(--green)':'var(--red)'}">${e.scssEligible?'✓':'✗'}</strong>`;
+  } else {
+    btn.style.display = 'none';
+    summary.innerHTML = '';
+  }
+}
 
 // ── STRATEGY ───────────────────────────────────────────────────────────────
 // 10+ yrs: 60% equity (12%) + 40% debt (7.5%) = blended 10.2%
@@ -501,27 +1024,118 @@ function strategy(yrs) {
   return                {label:'Long Term (10+ yrs)',   chip:'chip-long',    rate:LONG_RATE,  rateStr:'10.2% p.a.',equity:true,  alloc:{equity:60,debt:40}, instr:['Equity MF 60% — Nifty 50 Index / Flexi-cap','Debt MF 40% — Short Duration / Gilt','NPS Tier 1 (Aggressive)','ELSS Funds']};
 }
 
+// ── INSTRUMENT HELPERS ────────────────────────────────────────────────────
+function getGoalRate(g) {
+  if (!g.instrument || g.instrument === 'auto') return strategy(g.years).rate;
+  if (g.instrument === 'custom') return (g.customRate || 12) / 100;
+  const instr = INSTRUMENTS.find(i => i.id === g.instrument);
+  return instr ? instr.rate / 100 : strategy(g.years).rate;
+}
+
+function getGoalRateStr(g) {
+  return (getGoalRate(g) * 100).toFixed(1) + '% p.a.';
+}
+
+function getGoalInstrName(g) {
+  if (!g.instrument || g.instrument === 'auto') return null;
+  if (g.instrument === 'custom') return 'Custom (' + (g.customRate||12) + '%)';
+  const instr = INSTRUMENTS.find(i => i.id === g.instrument);
+  return instr ? instr.name : null;
+}
+
+function getHorizonWarning(years, instrumentId) {
+  if (!instrumentId || instrumentId === 'auto' || instrumentId === 'custom') return null;
+  const instr = INSTRUMENTS.find(i => i.id === instrumentId);
+  if (!instr || !instr.equity) return null;
+  if (years < 3) return '⚠️ <strong>High Risk:</strong> Equity-linked instruments are extremely risky for goals under 3 years. You could face significant capital loss. Debt instruments are strongly recommended.';
+  if (years < 7) return '⚠️ <strong>Caution:</strong> Equity is not recommended for goals under 7 years. Market corrections within this period can derail your goal. Consider debt-only instruments.';
+  if (years < 10) return '⚠️ <strong>Note:</strong> Pure equity carries moderate risk for goals under 10 years. A conservative hybrid or balanced approach is generally safer.';
+  return null;
+}
+
+// ── DANGER ALERT (BEEP + FLASH) ───────────────────────────────────────────
+let audioCtx = null;
+function playDangerBeep() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Two-tone descending alarm beep
+    [0, 0.18].forEach((delay, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'square';
+      osc.frequency.value = i === 0 ? 880 : 660; // descending
+      gain.gain.setValueAtTime(0.18, audioCtx.currentTime + delay);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + 0.15);
+      osc.start(audioCtx.currentTime + delay);
+      osc.stop(audioCtx.currentTime + delay + 0.15);
+    });
+  } catch (_) {}
+}
+
+function triggerDangerFlash(instrEl) {
+  // Flash the instrument tile red
+  if (instrEl) {
+    instrEl.classList.remove('sel');
+    instrEl.classList.add('danger-sel', 'danger-flash');
+    instrEl.addEventListener('animationend', () => {
+      instrEl.classList.remove('danger-flash');
+    }, { once: true });
+  }
+  // Flash the warning box
+  const warnEl = document.getElementById('instr-warning');
+  if (warnEl && warnEl.style.display !== 'none') {
+    warnEl.classList.add('danger-flash');
+    warnEl.addEventListener('animationend', () => {
+      warnEl.classList.remove('danger-flash');
+    }, { once: true });
+  }
+  // Flash the modal border
+  const modal = document.querySelector('.modal');
+  if (modal) {
+    modal.classList.add('danger-border');
+    modal.addEventListener('animationend', () => {
+      modal.classList.remove('danger-border');
+    }, { once: true });
+  }
+}
+
 // ── FORMULAS ──────────────────────────────────────────────────────────────
 // Future Goal Value = Current Cost × (1 + Inflation Rate)^Years
-//   done in wizard step 2: futureValue = currentValue × (1 + inf/100)^years
 //
-// SIP = NetFutureAmount × r ÷ [((1+r)^n − 1) × (1+r)]
-//   where  r = annualReturn ÷ 12   (monthly return rate)
-//          n = years × 12          (total months)
+// Standard SIP = NetFutureAmount × r ÷ [((1+r)^n − 1) × (1+r)]
+//   where  r = annualReturn ÷ 12, n = years × 12
 //   NetFutureAmount = FutureGoalValue − FutureValue of existing savings
-//   FutureValueOfSavings = savings × (1 + annualReturn)^years
+//
+// Step-up SIP: monthly SIP increases by stepUpRate% every year
+//   Year k: monthly SIP = P × (1+g)^k
+//   FV = Σ P×(1+g)^floor(m/12) × (1+r)^(n−m) for m=0..n-1
+//   So P = netNeeded / multiplier
 
-function sipNeeded(futureGoalValue, currentSavings, years, annualReturn, savingsReturn) {
-  const r  = annualReturn / 12;         // monthly investment return rate
-  const n  = years * 12;               // total number of months
-  const sr = (savingsReturn !== undefined ? savingsReturn : annualReturn); // savings grow at their own rate
-  // grow existing savings at their own return rate
+function sipNeeded(futureGoalValue, currentSavings, years, annualReturn, savingsReturn, stepUpRate) {
+  const r  = annualReturn / 12;
+  const n  = years * 12;
+  const sr = (savingsReturn !== undefined ? savingsReturn : annualReturn);
   const fvOfSavings = currentSavings * Math.pow(1 + sr, years);
-  // net corpus still needed via SIP
   const netNeeded = futureGoalValue - fvOfSavings;
   if (netNeeded <= 0) return 0;
-  // SIP = netNeeded × r ÷ [((1+r)^n − 1) × (1+r)]
-  return netNeeded * r / ((Math.pow(1 + r, n) - 1) * (1 + r));
+
+  if (!stepUpRate || stepUpRate <= 0) {
+    // Standard SIP formula (annuity-due)
+    return netNeeded * r / ((Math.pow(1 + r, n) - 1) * (1 + r));
+  }
+
+  // Step-up SIP: compute FV multiplier for initial P=1
+  let multiplier = 0;
+  for (let k = 0; k < years; k++) {
+    const yearFactor = Math.pow(1 + stepUpRate, k);
+    for (let m = 0; m < 12; m++) {
+      const monthIndex = k * 12 + m;
+      multiplier += yearFactor * Math.pow(1 + r, n - monthIndex);
+    }
+  }
+  return netNeeded / multiplier;
 }
 
 // ── FORMAT ─────────────────────────────────────────────────────────────────
@@ -541,12 +1155,20 @@ function render() {
   if(!goals.length){empty.style.display='block';updateStats();return;}
   empty.style.display='none';
   goals.forEach((g,i)=>{
-    const st=strategy(g.years), sip=sipNeeded(g.target,g.savings,g.years,st.rate,g.savingsRate||0.04);
+    const rate=getGoalRate(g);
+    const rateStr=getGoalRateStr(g);
+    const st=strategy(g.years);
+    const sip=sipNeeded(g.target,g.savings,g.years,rate,g.savingsRate||0.04,g.stepUp||0);
     const pct=Math.min(100,g.target>0?(g.savings/g.target)*100:0);
     const color=CAT_COLOR[g.category]||'#f5a623', onTrack=sip<=0;
+    const instrName=getGoalInstrName(g);
+    const hasStepUp=(g.stepUp||0)>0;
     const card=document.createElement('div');
     card.className='goal-card';
-    card.style.cssText=`--c:${color};animation-delay:${i*0.06}s`;
+    const goalInstr = INSTRUMENTS.find(x=>x.id===g.instrument);
+    const isEquityDanger = goalInstr && goalInstr.equity && g.years < 7;
+    if (isEquityDanger) card.classList.add('card-pulse-danger');
+    card.style.setProperty('--c', isEquityDanger ? 'var(--red)' : color);
     card.innerHTML=`
       <div class="card-top">
         <div class="card-left">
@@ -560,28 +1182,42 @@ function render() {
       </div>
       <div class="target-amt" style="color:${color}">${fmt(g.target)}</div>
       ${g.currentValue?`<div class="target-cv">Today's cost: ${fmt(g.currentValue)} &middot; ${g.inflation||'?'}% inflation</div>`:''}
-      <div class="target-meta">${g.years} year${g.years!==1?'s':''} away &middot; ${st.rateStr}</div>
+      <div class="target-meta">${g.years} year${g.years!==1?'s':''} away &middot; ${rateStr}${instrName?' &middot; '+instrName:''}</div>
       <div class="prog-hdr"><span>Saved: ${fmt(g.savings)}</span><span>${pct.toFixed(1)}%</span></div>
       <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${color}"></div></div>
       <div class="info-grid">
-        <div class="info-cell"><div class="ic-label">Monthly SIP</div><div class="ic-val" style="color:${color}">${onTrack?'&mdash;':'&#8377;'+Math.round(sip).toLocaleString('en-IN')}</div></div>
-        <div class="info-cell"><div class="ic-label">Total to Invest</div><div class="ic-val">${onTrack?'&mdash;':fmt(sip*g.years*12)}</div></div>
+        <div class="info-cell"><div class="ic-label">Monthly SIP${hasStepUp?' (start)':''}</div><div class="ic-val" style="color:${color}">${onTrack?'&mdash;':'&#8377;'+Math.round(sip).toLocaleString('en-IN')}</div></div>
+        <div class="info-cell"><div class="ic-label">Total to Invest</div><div class="ic-val">${onTrack?'&mdash;':fmt(calcTotalInvested(sip,g.years,g.stepUp||0))}</div></div>
       </div>
       ${onTrack
         ?`<div class="on-track">&#10003; Goal on track with current savings!</div>`
         :`<div class="chips">
             <span class="chip ${st.chip}">${st.label}</span>
-            <span class="chip ${st.equity?'chip-equity':'chip-noequity'}">${st.equity?'&#10003; Equity':'&#x2715; No Equity'}</span>
-            ${st.instr.slice(0,2).map(x=>`<span class="chip chip-debt">${x}</span>`).join('')}
-          </div>`
+            ${instrName?`<span class="chip chip-instr">${instrName}</span>`:`<span class="chip ${st.equity?'chip-equity':'chip-noequity'}">${st.equity?'&#10003; Equity':'&#x2715; No Equity'}</span>`}
+            ${hasStepUp?`<span class="chip chip-stepup">📈 ${(g.stepUp*100).toFixed(0)}% step-up</span>`:''}
+            ${(g.instrument==='ppf'||g.instrument==='ssy')?`<span class="chip chip-limit">₹1.5L/yr limit</span>`:''}
+            ${g.instrument==='ssy'?`<span class="chip chip-girl">👧 Girl child</span>`:''}
+            ${g.instrument==='scss'?`<span class="chip chip-age">👴 Age 60+</span>`:''}
+            ${(()=>{ const gi=INSTRUMENTS.find(x=>x.id===g.instrument); return gi && gi.equity && g.years<7 ? '<span class="chip chip-danger">⚠️ Equity risk!' + (g.years<3?' VERY HIGH':'') + '</span>' : ''; })()}
+          </div>
+          ${(()=>{ const gi=INSTRUMENTS.find(x=>x.id===g.instrument); return gi && gi.equity && g.years<7 ? '<div class="card-danger-banner">⚠️ <span><strong>High Risk:</strong> Equity instrument selected for a ' + g.years + '-year goal. Debt instruments are recommended for goals under 7 years.</span></div>' : ''; })()}`
       }`;
     grid.appendChild(card);
   });
   updateStats();
 }
 
+function calcTotalInvested(initialSIP, years, stepUpRate) {
+  if (!stepUpRate || stepUpRate <= 0) return initialSIP * years * 12;
+  let total = 0;
+  for (let k = 0; k < years; k++) {
+    total += initialSIP * Math.pow(1 + stepUpRate, k) * 12;
+  }
+  return total;
+}
+
 function updateStats() {
-  const totalSIP=goals.reduce((s,g)=>{const st=strategy(g.years);return s+sipNeeded(g.target,g.savings,g.years,st.rate);},0);
+  const totalSIP=goals.reduce((s,g)=>{const rate=getGoalRate(g);return s+sipNeeded(g.target,g.savings,g.years,rate,g.savingsRate||0.04,g.stepUp||0);},0);
   const totalCorpus=goals.reduce((s,g)=>s+Number(g.target),0);
   const totalSaved=goals.reduce((s,g)=>s+Number(g.savings),0);
   document.getElementById('s-goals').textContent=goals.length;
@@ -597,8 +1233,8 @@ function del(id){if(!confirm('Remove this goal?'))return;goals=goals.filter(g=>g
 function openModal(id=null) {
   const g=id?goals.find(x=>x.id===id):null;
   wz=g
-    ?{step:1,id,name:g.name,category:g.category,currentValue:g.currentValue||g.target,monthlyExpenses:g.monthlyExpenses||0,years:g.years,savings:g.savings,savingsRate:g.savingsRate||0.04,inflation:g.inflation||INF_RATE[g.category]||6,futureValue:g.target,strat:null,sip:0}
-    :{step:1,id:null,name:'',category:'education',currentValue:0,years:0,savings:0,inflation:8,futureValue:0,strat:null,sip:0};
+    ?{step:1,id,name:g.name,category:g.category,currentValue:g.currentValue||g.target,monthlyExpenses:g.monthlyExpenses||0,years:g.years,savings:g.savings,savingsRate:g.savingsRate||0.04,inflation:g.inflation||INF_RATE[g.category]||6,futureValue:g.target,strat:null,sip:0,instrument:g.instrument||'auto',customRate:g.customRate||12,stepUp:g.stepUp||0}
+    :{step:1,id:null,name:'',category:'education',currentValue:0,years:0,savings:0,inflation:8,futureValue:0,strat:null,sip:0,instrument:'auto',customRate:12,stepUp:0};
   document.getElementById('m-title').textContent=id?'Edit Goal':'Add New Goal';
   document.getElementById('overlay').classList.add('open');
   goToStep(1);
@@ -639,7 +1275,7 @@ function wzNext() {
     if(cat==='retirement'){
       monthly=parseFloat(document.getElementById('w-monthly').value)||0;
       yrs=parseFloat(document.getElementById('w-ret-years').value)||0;
-      cv=monthly*12*30; // corpus = monthly × 12 months × 30 years
+      cv=monthly*12*30;
     }
     if(!name||!cv||cv<100||!yrs||yrs<1){err.style.display='block';return;}
     err.style.display='none';
@@ -653,16 +1289,32 @@ function wzNext() {
     wz.strat=strategy(wz.years);
     goToStep(3);
   } else if(n===3){
-    wz.sip=sipNeeded(wz.futureValue,wz.savings,wz.years,wz.strat.rate,wz.savingsRate);
+    // Capture instrument selection
+    const rate = getWzRate();
+    wz.sip=sipNeeded(wz.futureValue,wz.savings,wz.years,rate,wz.savingsRate,wz.stepUp||0);
     goToStep(4);
   } else if(n===4){
-    const g={id:wz.id||uid(),name:wz.name,category:wz.category,target:Math.round(wz.futureValue),years:wz.years,savings:wz.savings,savingsRate:wz.savingsRate,currentValue:wz.currentValue,monthlyExpenses:wz.monthlyExpenses||0,inflation:wz.inflation};
+    // Capture final step-up value
+    const stepUpEl = document.getElementById('w-stepup');
+    if (stepUpEl) {
+      wz.stepUp = (parseFloat(stepUpEl.value) || 0) / 100;
+    }
+    const rate = getWzRate();
+    wz.sip = sipNeeded(wz.futureValue, wz.savings, wz.years, rate, wz.savingsRate, wz.stepUp);
+    const g={id:wz.id||uid(),name:wz.name,category:wz.category,target:Math.round(wz.futureValue),years:wz.years,savings:wz.savings,savingsRate:wz.savingsRate,currentValue:wz.currentValue,monthlyExpenses:wz.monthlyExpenses||0,inflation:wz.inflation,instrument:wz.instrument,customRate:wz.customRate,stepUp:wz.stepUp};
     if(wz.id){const idx=goals.findIndex(x=>x.id===wz.id);goals[idx]=g;}
     else goals.push(g);
     save();render();closeModal();
   }
 }
 function wzBack(){if(wz.step>1)goToStep(wz.step-1);}
+
+function getWzRate() {
+  if (!wz.instrument || wz.instrument === 'auto') return wz.strat ? wz.strat.rate : strategy(wz.years).rate;
+  if (wz.instrument === 'custom') return (wz.customRate || 12) / 100;
+  const instr = INSTRUMENTS.find(i => i.id === wz.instrument);
+  return instr ? instr.rate / 100 : strategy(wz.years).rate;
+}
 
 // ─ Step fillers ────────────────────────────────────────────────────────────
 function fillStep1(){
@@ -733,7 +1385,6 @@ function updateFVDisplay(){
   const inf=Math.max(1,Math.min(20,parseFloat(document.getElementById('w-inf').value)||wz.inflation));
   let fv, extraText;
   if(wz.category==='retirement'&&wz.monthlyExpenses){
-    // Future monthly expenses at retirement, then × 12 × 30
     const futureMonthly=wz.monthlyExpenses*Math.pow(1+inf/100,wz.years);
     const futureAnnual=futureMonthly*12;
     fv=futureAnnual*30;
@@ -750,11 +1401,15 @@ function updateFVDisplay(){
   wz.futureValue=fv; wz.inflation=inf;
 }
 
+// ── STEP 3 – INSTRUMENT SELECTOR ──────────────────────────────────────────
 function fillStep3(){
   const st=wz.strat||strategy(wz.years);
   wz.strat=st;
   const eq=st.equity;
-  document.getElementById('s3-content').innerHTML=`
+  const currentInstr = wz.instrument || 'auto';
+  const autoRateStr = st.rateStr;
+
+  let html = `
     <div class="strat-card" style="background:var(--bg3);border-color:${eq?'var(--green)':'var(--gold)'}">
       <div class="strat-badge" style="background:${eq?'var(--green-d)':'var(--gold-dim)'};color:${eq?'var(--green)':'var(--gold)'}">
         ${eq?'🏆':'🛡️'} &nbsp;${st.label}
@@ -780,77 +1435,492 @@ function fillStep3(){
         :`${wz.years<=7?`⚠️ <strong>${wz.years} years</strong> is too short for equity. Debt-only instruments (FDs, Debt MFs) protect your principal while earning above savings account rates.`:`⚠️ <strong>${wz.years} years</strong> — Conservative Hybrid is ideal here. The 75–90% debt portion protects downside while the small equity sleeve (10–25%) adds a return kicker over your 7–10 year horizon. No pure equity.`}`
       }
     </div>
-  `;
+
+    <div class="instr-section-title">🎯 Choose Your Investment Instrument</div>
+    <div class="instr-grid" id="instr-grid">`;
+
+  // Render instrument options
+  INSTRUMENTS.forEach(inst => {
+    const isSelected = currentInstr === inst.id;
+    const rateDisplay = inst.id === 'auto' ? autoRateStr : (inst.rate !== null ? inst.rate + '%' : '—');
+    html += `
+      <div class="instr-option${isSelected?' sel':''}" id="io-${inst.id}" onclick="selectInstr('${inst.id}')">
+        <div class="io-icon">${inst.icon}</div>
+        <div class="io-name">${inst.name}</div>
+        <div class="io-rate">${rateDisplay}</div>
+        <div class="io-desc">${inst.desc}</div>
+      </div>`;
+  });
+
+  html += `</div>`;
+
+  // Custom rate input
+  html += `
+    <div class="custom-rate-wrap" id="custom-rate-wrap" style="display:${currentInstr==='custom'?'block':'none'}">
+      <div class="fg" style="margin-bottom:0">
+        <label>Custom Return Rate (% p.a.)</label>
+        <input id="w-custom-rate" type="number" placeholder="12" min="1" max="30" step="0.5" value="${wz.customRate||12}" oninput="onCustomRateChange()">
+      </div>
+    </div>`;
+
+  // Selected rate display
+  const selectedRate = currentInstr === 'auto' ? autoRateStr : (currentInstr === 'custom' ? (wz.customRate||12)+'% p.a.' : (INSTRUMENTS.find(i=>i.id===currentInstr)?.rate||0)+'% p.a.');
+  html += `
+    <div class="selected-rate-display" id="selected-rate-display">
+      <span>Selected return rate:</span>
+      <b id="selected-rate-val">${selectedRate}</b>
+    </div>`;
+
+  // Horizon warning
+  const warning = getHorizonWarning(wz.years, currentInstr);
+  html += `<div class="warn-note" id="instr-warning" style="display:${warning?'flex':'none'}">${warning||''}</div>`;
+
+  // Instrument constraint info box
+  const constraintInfo = getInstrConstraintInfo(currentInstr);
+  const infoClass = currentInstr === 'ppf' ? 'info-ppf' : currentInstr === 'ssy' ? 'info-ssy' : currentInstr === 'scss' ? 'info-scss' : '';
+  html += `<div class="instr-info-box ${infoClass}" id="instr-constraint-info" style="display:${constraintInfo?'block':'none'}">${constraintInfo?constraintInfo.info:''}</div>`;
+
+  // Per-account annual limit warning for PPF/SSY + eligibility from family profile
+  const elig = getEligibility();
+  if (currentInstr === 'ppf' || currentInstr === 'ssy' || currentInstr === 'scss') {
+    let limitNote = '';
+    if (currentInstr === 'ppf') {
+      const maxAccounts = familyProfile ? elig.ppfAccounts : 2;
+      const existingCount = countGoalsUsingInstrument('ppf', wz.id);
+      if (existingCount >= maxAccounts) {
+        limitNote = `⚠️ You already have <strong>${existingCount} goal(s)</strong> using PPF. Your family can have max <strong>${maxAccounts} PPF account(s)</strong>${familyProfile?(familyProfile.marital==='single'?' (single)':' (couple)'):''}. Consider a different instrument.`;
+      } else if (familyProfile) {
+        limitNote = `ℹ️ Your family is eligible for <strong>${maxAccounts} PPF account(s)</strong> (₹1.5L/yr each = ₹${(maxAccounts*1.5).toFixed(1)}L/yr).${existingCount > 0 ? ' <strong>'+existingCount+'</strong> already in use.' : ''}`;
+      }
+    } else if (currentInstr === 'ssy') {
+      const maxAccounts = familyProfile ? elig.ssyAccounts : 0;
+      const existingCount = countGoalsUsingInstrument('ssy', wz.id);
+      if (!familyProfile || maxAccounts === 0) {
+        limitNote = `⚠️ <strong>SSY requires a girl child under 10 years old.</strong>${familyProfile ? ' Based on your family profile, no daughters are currently eligible.' : ' Please set up your family profile to check eligibility.'}`;
+      } else if (existingCount >= maxAccounts) {
+        limitNote = `⚠️ You already have <strong>${existingCount} goal(s)</strong> using SSY. Your family has <strong>${maxAccounts} eligible daughter(s)</strong>. Consider a different instrument.`;
+      } else {
+        limitNote = `ℹ️ Your family has <strong>${maxAccounts} eligible SSY account(s)</strong> (₹1.5L/yr each).${existingCount > 0 ? ' <strong>'+existingCount+'</strong> already in use.' : ''}`;
+      }
+    } else if (currentInstr === 'scss') {
+      if (!familyProfile || !elig.scssEligible) {
+        limitNote = `⚠️ <strong>SCSS requires age 60+.</strong>${familyProfile ? ' Based on your profile, nobody in your family is currently eligible.' : ' Please set up your family profile to check eligibility.'}`;
+      } else {
+        limitNote = `✅ <strong>${elig.scssWho}</strong> in your family is eligible for SCSS (age 60+). Max deposit ₹30 lakh.`;
+      }
+    }
+    html += `<div class="limit-warn" id="instr-limit-warn" style="display:${limitNote?'block':'none'}">${limitNote}</div>`;
+  } else {
+    html += `<div class="limit-warn" id="instr-limit-warn" style="display:none"></div>`;
+  }
+
+  document.getElementById('s3-content').innerHTML = html;
 }
 
-function fillStep4(){
-  const sip=wz.sip, onTrack=sip<=0;
-  const totalInv=onTrack?0:Math.round(sip*wz.years*12);
-  const returns=onTrack?0:Math.round(wz.futureValue-totalInv);
-  document.getElementById('s4-content').innerHTML=`
-    ${onTrack
-      ?`<div class="sip-hero"><div class="sip-label">Status</div><div class="sip-amount" style="color:var(--green)">On Track ✅</div><div class="sip-sub">Your current savings will reach ₹${fmt(wz.futureValue).replace('₹','')} by then</div></div>`
-      :`<div class="sip-hero">
-          <div class="sip-label">Monthly SIP Needed</div>
-          <div class="sip-amount">₹${Math.round(sip).toLocaleString('en-IN')}</div>
-          <div class="sip-sub">every month for ${wz.years} year${wz.years!==1?'s':''}</div>
-        </div>`
+function selectInstr(id) {
+  wz.instrument = id;
+  // Update selection UI
+  document.querySelectorAll('.instr-option').forEach(el => { el.classList.remove('sel'); el.classList.remove('danger-sel'); el.classList.remove('danger-flash'); });
+  const el = document.getElementById('io-' + id);
+  if (el) el.classList.add('sel');
+
+  // Check if this is a dangerous equity pick for short-term goals
+  const instr = INSTRUMENTS.find(i => i.id === id);
+  const isDangerousEquity = instr && instr.equity && wz.years < 7;
+  if (isDangerousEquity) {
+    playDangerBeep();
+    triggerDangerFlash(el);
+  }
+
+  // Show/hide custom rate input
+  document.getElementById('custom-rate-wrap').style.display = id === 'custom' ? 'block' : 'none';
+
+  // Update selected rate display
+  const st = wz.strat || strategy(wz.years);
+  let rateStr;
+  if (id === 'auto') rateStr = st.rateStr;
+  else if (id === 'custom') rateStr = (wz.customRate || 12) + '% p.a.';
+  else {
+    const instr = INSTRUMENTS.find(i => i.id === id);
+    rateStr = instr ? instr.rate + '% p.a.' : st.rateStr;
+  }
+  document.getElementById('selected-rate-val').textContent = rateStr;
+
+  // Horizon warning
+  const warning = getHorizonWarning(wz.years, id);
+  const warnEl = document.getElementById('instr-warning');
+  if (warning) { warnEl.innerHTML = warning; warnEl.style.display = 'flex'; }
+  else { warnEl.style.display = 'none'; }
+
+  // Update constraint info box
+  const constraintInfo = getInstrConstraintInfo(id);
+  const infoEl = document.getElementById('instr-constraint-info');
+  if (infoEl) {
+    if (constraintInfo) {
+      const infoClass = id === 'ppf' ? 'info-ppf' : id === 'ssy' ? 'info-ssy' : id === 'scss' ? 'info-scss' : '';
+      infoEl.className = 'instr-info-box ' + infoClass;
+      infoEl.innerHTML = constraintInfo.info;
+      infoEl.style.display = 'block';
+    } else {
+      infoEl.style.display = 'none';
     }
+  }
+
+  // Update per-account limit warning using family profile
+  const limitEl = document.getElementById('instr-limit-warn');
+  if (limitEl) {
+    const elig = getEligibility();
+    let limitNote = '';
+    if (id === 'ppf') {
+      const maxAccounts = familyProfile ? elig.ppfAccounts : 2;
+      const existingCount = countGoalsUsingInstrument('ppf', wz.id);
+      if (existingCount >= maxAccounts) {
+        limitNote = `⚠️ You already have <strong>${existingCount} goal(s)</strong> using PPF. Your family can have max <strong>${maxAccounts} PPF account(s)</strong>${familyProfile?(familyProfile.marital==='single'?' (single)':' (couple)'):''}. Consider a different instrument.`;
+      } else if (familyProfile) {
+        limitNote = `ℹ️ Your family is eligible for <strong>${maxAccounts} PPF account(s)</strong> (₹1.5L/yr each = ₹${(maxAccounts*1.5).toFixed(1)}L/yr).${existingCount > 0 ? ' <strong>'+existingCount+'</strong> already in use.' : ''}`;
+      }
+    } else if (id === 'ssy') {
+      const maxAccounts = familyProfile ? elig.ssyAccounts : 0;
+      const existingCount = countGoalsUsingInstrument('ssy', wz.id);
+      if (!familyProfile || maxAccounts === 0) {
+        limitNote = `⚠️ <strong>SSY requires a girl child under 10 years old.</strong>${familyProfile ? ' Based on your family profile, no daughters are currently eligible.' : ' Please set up your family profile to check eligibility.'}`;
+      } else if (existingCount >= maxAccounts) {
+        limitNote = `⚠️ You already have <strong>${existingCount} goal(s)</strong> using SSY. Your family has <strong>${maxAccounts} eligible daughter(s)</strong>. Consider a different instrument.`;
+      } else {
+        limitNote = `ℹ️ Your family has <strong>${maxAccounts} eligible SSY account(s)</strong> (₹1.5L/yr each).${existingCount > 0 ? ' <strong>'+existingCount+'</strong> already in use.' : ''}`;
+      }
+    } else if (id === 'scss') {
+      if (!familyProfile || !elig.scssEligible) {
+        limitNote = `⚠️ <strong>SCSS requires age 60+.</strong>${familyProfile ? ' Based on your profile, nobody in your family is currently eligible.' : ' Please set up your family profile to check eligibility.'}`;
+      } else {
+        limitNote = `✅ <strong>${elig.scssWho}</strong> in your family is eligible for SCSS (age 60+). Max deposit ₹30 lakh.`;
+      }
+    }
+    if (id === 'ppf' || id === 'ssy' || id === 'scss') {
+      if (limitNote) { limitEl.innerHTML = limitNote; limitEl.style.display = 'block'; }
+      else { limitEl.style.display = 'none'; }
+    } else {
+      limitEl.style.display = 'none';
+    }
+  }
+}
+
+function onCustomRateChange() {
+  const v = parseFloat(document.getElementById('w-custom-rate').value) || 12;
+  wz.customRate = v;
+  document.getElementById('selected-rate-val').textContent = v + '% p.a.';
+}
+
+// ── STEP 4 – SIP WITH STEP-UP ────────────────────────────────────────────
+function fillStep4(){
+  const rate = getWzRate();
+  const sipNoStepUp = sipNeeded(wz.futureValue, wz.savings, wz.years, rate, wz.savingsRate, 0);
+  const currentStepUp = wz.stepUp || 0;
+  const sipWithStepUp = currentStepUp > 0 ? sipNeeded(wz.futureValue, wz.savings, wz.years, rate, wz.savingsRate, currentStepUp) : sipNoStepUp;
+  wz.sip = sipWithStepUp;
+  const onTrack = sipWithStepUp <= 0;
+
+  const instrName = getGoalInstrName({instrument:wz.instrument,customRate:wz.customRate});
+  const rateStr = (rate * 100).toFixed(1) + '% p.a.';
+
+  let html = '';
+
+  // SIP Hero
+  if (onTrack) {
+    html += `<div class="sip-hero"><div class="sip-label">Status</div><div class="sip-amount" style="color:var(--green)">On Track ✅</div><div class="sip-sub">Your current savings will reach ${fmt(wz.futureValue)} by then</div></div>`;
+  } else {
+    html += `
+      <div class="sip-hero">
+        <div class="sip-label">Monthly SIP Needed${currentStepUp>0?' (Starting)':''}</div>
+        <div class="sip-amount" id="sip-hero-amt">₹${Math.round(sipWithStepUp).toLocaleString('en-IN')}</div>
+        <div class="sip-sub">every month for ${wz.years} year${wz.years!==1?'s':''}${instrName?' via '+instrName:''}</div>
+      </div>`;
+  }
+
+  // Journey strip
+  html += `
     <div class="journey-strip">
       <span class="j-step">${fmt(wz.currentValue)} today</span><span class="j-arr">→</span>
       <span class="j-step">${wz.inflation}% inflation</span><span class="j-arr">→</span>
       <span class="j-step">${fmt(wz.futureValue)} needed</span><span class="j-arr">→</span>
-      <span class="j-step">${wz.strat.label}${wz.strat.alloc?" — 60% Eq / 40% Debt":""} (${wz.strat.rateStr})</span><span class="j-arr">→</span>
-      <span class="j-step" style="color:var(--gold)">${onTrack?'On Track ✅':'₹'+Math.round(sip).toLocaleString('en-IN')+'/mo'}</span>
-    </div>
-    <div class="sum-grid">
-      ${wz.category==='retirement'&&wz.monthlyExpenses?`<div class="sum-cell"><div class="sum-lbl">Monthly Expenses</div><div class="sum-val">${fmt(wz.monthlyExpenses)}/mo</div></div>`:`<div class="sum-cell"><div class="sum-lbl">Today's Cost</div><div class="sum-val">${fmt(wz.currentValue)}</div></div>`}
-      <div class="sum-cell"><div class="sum-lbl">Future Value</div><div class="sum-val" style="color:var(--gold)">${fmt(wz.futureValue)}</div></div>
-      <div class="sum-cell"><div class="sum-lbl">Inflation Rate</div><div class="sum-val">${wz.inflation}% p.a.</div></div>
-      ${wz.savings>0?`<div class="sum-cell"><div class="sum-lbl">Savings Return</div><div class="sum-val">${(wz.savingsRate*100).toFixed(1)}% p.a.</div></div>`:''}
-      <div class="sum-cell"><div class="sum-lbl">Return Rate</div><div class="sum-val">${wz.strat.rateStr}</div></div>
-      ${!onTrack?`
+      <span class="j-step">${instrName||wz.strat.label} (${rateStr})</span><span class="j-arr">→</span>
+      <span class="j-step" style="color:var(--gold)">${onTrack?'On Track ✅':'₹'+Math.round(sipWithStepUp).toLocaleString('en-IN')+'/mo'}</span>
+    </div>`;
+
+  // Step-up controls (only show when not on track)
+  if (!onTrack) {
+    const stepUpPct = Math.round(currentStepUp * 100);
+    html += `
+    <div class="stepup-ctrl">
+      <div class="stepup-hdr">
+        <div class="stepup-title">📈 Annual SIP Step-up</div>
+        <div class="stepup-right">
+          <input class="stepup-input" id="w-stepup" type="number" min="0" max="25" step="1" value="${stepUpPct}" oninput="onStepUpChange()">
+          <span style="color:var(--text2);font-size:.82rem">% / yr</span>
+        </div>
+      </div>
+      <div class="fhint" style="margin-top:.15rem;margin-bottom:.3rem">Increase your SIP annually as income grows. Reduces starting amount significantly.</div>
+      <div class="quick-btns">
+        <button class="quick-btn${stepUpPct===0?' active':''}" onclick="setStepUp(0)">0%</button>
+        <button class="quick-btn${stepUpPct===5?' active':''}" onclick="setStepUp(5)">5%</button>
+        <button class="quick-btn${stepUpPct===10?' active':''}" onclick="setStepUp(10)">10%</button>
+        <button class="quick-btn${stepUpPct===15?' active':''}" onclick="setStepUp(15)">15%</button>
+      </div>
+      <div id="stepup-compare"></div>
+      <div id="stepup-table-wrap"></div>
+    </div>`;
+  }
+
+  // Summary grid
+  html += `<div class="sum-grid">`;
+  if (wz.category==='retirement'&&wz.monthlyExpenses) {
+    html += `<div class="sum-cell"><div class="sum-lbl">Monthly Expenses</div><div class="sum-val">${fmt(wz.monthlyExpenses)}/mo</div></div>`;
+  } else {
+    html += `<div class="sum-cell"><div class="sum-lbl">Today's Cost</div><div class="sum-val">${fmt(wz.currentValue)}</div></div>`;
+  }
+  html += `<div class="sum-cell"><div class="sum-lbl">Future Value</div><div class="sum-val" style="color:var(--gold)">${fmt(wz.futureValue)}</div></div>`;
+  html += `<div class="sum-cell"><div class="sum-lbl">Inflation Rate</div><div class="sum-val">${wz.inflation}% p.a.</div></div>`;
+  if (wz.savings > 0) {
+    html += `<div class="sum-cell"><div class="sum-lbl">Savings Return</div><div class="sum-val">${(wz.savingsRate*100).toFixed(1)}% p.a.</div></div>`;
+  }
+  html += `<div class="sum-cell"><div class="sum-lbl">Return Rate</div><div class="sum-val">${rateStr}</div></div>`;
+  if (!onTrack) {
+    const totalInv = calcTotalInvested(sipWithStepUp, wz.years, currentStepUp);
+    const returns = Math.max(0, wz.futureValue - totalInv);
+    html += `
       <div class="sum-cell"><div class="sum-lbl">Total Invested</div><div class="sum-val">${fmt(totalInv)}</div></div>
-      <div class="sum-cell"><div class="sum-lbl">Wealth Created</div><div class="sum-val" style="color:var(--green)">${fmt(returns)}</div></div>`:''}
-    </div>
-    <div class="res-note">💡 <strong>Instrument:</strong> ${wz.strat.instr.join(' · ')}</div>
-  `;
+      <div class="sum-cell"><div class="sum-lbl">Wealth Created</div><div class="sum-val" style="color:var(--green)">${fmt(returns)}</div></div>`;
+  }
+  html += `</div>`;
+
+  // Instrument note
+  const st = wz.strat || strategy(wz.years);
+  const instrList = instrName ? instrName : st.instr.join(' · ');
+  html += `<div class="res-note">💡 <strong>Instrument:</strong> ${instrList}</div>`;
+
+  // Annual limit warning for PPF/SSY in Step 4
+  if ((wz.instrument === 'ppf' || wz.instrument === 'ssy') && !onTrack) {
+    const annualSIP = sipWithStepUp * 12;
+    const limitPerAccount = 150000;
+    const instrLabel = wz.instrument === 'ppf' ? 'PPF' : 'SSY';
+    const existingAnnual = getTotalAnnualSIPForInstrument(wz.instrument, wz.id);
+    const maxAccounts = INSTR_CONSTRAINTS[wz.instrument].maxAccountsPerFamily;
+    let warnHtml = '';
+    if (annualSIP > limitPerAccount) {
+      warnHtml += `<div class="limit-warn">⚠️ Your annual SIP of <strong>₹${Math.round(annualSIP).toLocaleString('en-IN')}</strong> exceeds the <strong>₹1,50,000/yr per-account</strong> limit for ${instrLabel}. You would need <strong>${Math.ceil(annualSIP/limitPerAccount)} account(s)</strong> to accommodate this — family max is <strong>${maxAccounts}</strong>.</div>`;
+    }
+    if (existingAnnual > 0) {
+      const combined = existingAnnual + annualSIP;
+      const totalFamilyLimit = maxAccounts * limitPerAccount;
+      if (combined > totalFamilyLimit) {
+        warnHtml += `<div class="limit-warn" style="margin-top:.5rem">⚠️ <strong>Family limit exceeded:</strong> Total annual ${instrLabel} across all goals = <strong>₹${Math.round(combined).toLocaleString('en-IN')}</strong>, but max ${maxAccounts} accounts × ₹1.5L = <strong>₹${(totalFamilyLimit/100000).toFixed(1)}L/yr</strong>. Consider splitting across different instruments.</div>`;
+      }
+    }
+    html += warnHtml;
+  }
+
+  // SSY withdrawal info reminder in Step 4
+  if (wz.instrument === 'ssy' && !onTrack) {
+    html += `<div class="instr-info-box info-ssy" style="margin-top:.65rem">👧 <strong>Remember:</strong> SSY allows partial withdrawal (up to 50% of balance) once the girl child turns 18 or passes Class 10 — whichever is earlier. This can be used for higher education or marriage.</div>`;
+  }
+
+  // SCSS reminder in Step 4
+  if (wz.instrument === 'scss' && !onTrack) {
+    html += `<div class="instr-info-box info-scss" style="margin-top:.65rem">👴 <strong>Reminder:</strong> SCSS requires the investor to be aged 60+ (55+ for retired defence). Max deposit ₹30 lakh. Tenure is 5 years (extendable by 3).</div>`;
+  }
+
+  document.getElementById('s4-content').innerHTML = html;
+
+  // Render step-up comparison if step-up > 0
+  if (!onTrack && currentStepUp > 0) {
+    renderStepUpComparison(sipNoStepUp, sipWithStepUp, currentStepUp);
+  }
+}
+
+function setStepUp(pct) {
+  const el = document.getElementById('w-stepup');
+  if (el) el.value = pct;
+  onStepUpChange();
+}
+
+function onStepUpChange() {
+  const pctVal = parseFloat(document.getElementById('w-stepup').value) || 0;
+  const stepUp = Math.max(0, Math.min(25, pctVal)) / 100;
+  wz.stepUp = stepUp;
+
+  const rate = getWzRate();
+  const sipNoStepUp = sipNeeded(wz.futureValue, wz.savings, wz.years, rate, wz.savingsRate, 0);
+  const sipWithStepUp = stepUp > 0 ? sipNeeded(wz.futureValue, wz.savings, wz.years, rate, wz.savingsRate, stepUp) : sipNoStepUp;
+  wz.sip = sipWithStepUp;
+
+  // Update hero amount
+  const heroEl = document.getElementById('sip-hero-amt');
+  if (heroEl) heroEl.textContent = '₹' + Math.round(sipWithStepUp).toLocaleString('en-IN');
+
+  // Update quick button active states
+  const pctRound = Math.round(pctVal);
+  document.querySelectorAll('.quick-btn').forEach(btn => {
+    const btnVal = parseInt(btn.textContent);
+    btn.classList.toggle('active', btnVal === pctRound);
+  });
+
+  // Update comparison
+  const compareEl = document.getElementById('stepup-compare');
+  const tableEl = document.getElementById('stepup-table-wrap');
+
+  if (stepUp > 0 && sipWithStepUp > 0) {
+    renderStepUpComparison(sipNoStepUp, sipWithStepUp, stepUp);
+  } else {
+    if (compareEl) compareEl.innerHTML = '';
+    if (tableEl) tableEl.innerHTML = '';
+  }
+
+  // Update summary grid totals
+  const totalInv = calcTotalInvested(sipWithStepUp, wz.years, stepUp);
+  const returns = Math.max(0, wz.futureValue - totalInv);
+  // These are inside sum-grid, update if they exist
+  const sumVals = document.querySelectorAll('.sum-cell .sum-val');
+  // We'd need to specifically target them - simpler to just refill step 4
+  // But to avoid recursion, we only update the compare section
+}
+
+function renderStepUpComparison(sipNoStepUp, sipWithStepUp, stepUpRate) {
+  const compareEl = document.getElementById('stepup-compare');
+  const tableEl = document.getElementById('stepup-table-wrap');
+  if (!compareEl || !tableEl) return;
+
+  const saving = ((1 - sipWithStepUp / sipNoStepUp) * 100).toFixed(0);
+  const stepUpPct = Math.round(stepUpRate * 100);
+
+  compareEl.innerHTML = `
+    <div class="sip-compare">
+      <div class="cmp-card">
+        <div class="cmp-label">Without Step-up</div>
+        <div class="cmp-val" style="color:var(--text2)">₹${Math.round(sipNoStepUp).toLocaleString('en-IN')}/mo</div>
+        <div class="cmp-badge" style="background:var(--red-d);color:var(--red)">Fixed monthly</div>
+      </div>
+      <div class="cmp-card">
+        <div class="cmp-label">With ${stepUpPct}% Step-up</div>
+        <div class="cmp-val" style="color:var(--green)">₹${Math.round(sipWithStepUp).toLocaleString('en-IN')}/mo</div>
+        <div class="cmp-badge" style="background:var(--green-d);color:var(--green)">${saving}% lower start!</div>
+      </div>
+    </div>`;
+
+  // Year-wise breakdown table
+  let tableHtml = `
+    <div class="yr-table-wrap">
+      <table class="yr-table">
+        <thead><tr><th>Year</th><th>Monthly SIP</th><th>Annual Total</th><th>Cumulative</th></tr></thead>
+        <tbody>`;
+
+  let cumulative = 0;
+  for (let k = 0; k < wz.years; k++) {
+    const monthlySIP = sipWithStepUp * Math.pow(1 + stepUpRate, k);
+    const annual = monthlySIP * 12;
+    cumulative += annual;
+    tableHtml += `<tr>
+      <td>Year ${k + 1}</td>
+      <td style="color:var(--gold)">₹${Math.round(monthlySIP).toLocaleString('en-IN')}</td>
+      <td>₹${Math.round(annual).toLocaleString('en-IN')}</td>
+      <td>${fmt(cumulative)}</td>
+    </tr>`;
+  }
+
+  tableHtml += `</tbody></table></div>`;
+  tableEl.innerHTML = tableHtml;
 }
 
 // ── STANDALONE CALCULATOR ──────────────────────────────────────────────────
+function calcInstrChange() {
+  const v = document.getElementById('c-instr').value;
+  document.getElementById('c-custom-wrap').style.display = v === 'custom' ? 'block' : 'none';
+  calcUpdate();
+}
+
+function getCalcRate(yrs) {
+  const instrId = document.getElementById('c-instr').value;
+  if (instrId === 'auto') return strategy(yrs).rate;
+  if (instrId === 'custom') return (parseFloat(document.getElementById('c-custom-rate').value) || 12) / 100;
+  const instr = INSTRUMENTS.find(i => i.id === instrId);
+  return instr ? instr.rate / 100 : strategy(yrs).rate;
+}
+
 function calcUpdate(){
   const tgt=parseFloat(document.getElementById('c-target').value)||0;
   const yrs=parseFloat(document.getElementById('c-years').value)||0;
   const sav=parseFloat(document.getElementById('c-savings').value)||0;
+  const stepUp=(parseFloat(document.getElementById('c-stepup').value)||0)/100;
   const th=document.getElementById('c-target-hint'), yh=document.getElementById('c-years-hint');
   const res=document.getElementById('c-result'), cw=document.getElementById('c-chart-wrap');
   if(tgt) th.textContent=fmt(tgt); else th.textContent='';
   if(!tgt||!yrs){res.innerHTML='<div style="text-align:center;color:var(--text3);font-size:.82rem;padding:1rem 0;">Enter target amount and years to see your plan</div>';cw.style.display='none';return;}
-  const st=strategy(yrs), sip=sipNeeded(tgt,sav,yrs,st.rate);
-  const totalInv=sip>0?sip*yrs*12:0, wealth=sip>0?tgt-totalInv:0;
+
+  const rate = getCalcRate(yrs);
+  const rateStr = (rate * 100).toFixed(1) + '% p.a.';
+  const st = strategy(yrs);
+  const instrId = document.getElementById('c-instr').value;
+  const isAuto = instrId === 'auto';
+  const instrObj = INSTRUMENTS.find(i => i.id === instrId);
+  const instrLabel = isAuto ? st.label : (instrId === 'custom' ? 'Custom' : (instrObj ? instrObj.name : st.label));
+
+  const sipNoStepUp = sipNeeded(tgt, sav, yrs, rate, undefined, 0);
+  const sip = sipNeeded(tgt, sav, yrs, rate, undefined, stepUp);
+  const totalInv = sip > 0 ? calcTotalInvested(sip, yrs, stepUp) : 0;
+  const wealth = sip > 0 ? tgt - totalInv : 0;
+
   yh.className='fhint '+(yrs<10?'warn':'ok');
   yh.textContent=yrs<3?'⚠ Short term — debt only':yrs<=10?'⚠ Under 10 years — equity not recommended':'✓ Long term — equity allowed';
+
+  // Horizon warning for selected instrument
+  const horizonWarn = getHorizonWarning(yrs, instrId);
+
   res.innerHTML=`
-    <div class="res-row"><span class="res-label">Horizon</span><span class="res-val">${st.label} (${yrs} yrs)</span></div>
-    <div class="res-row"><span class="res-label">Return Rate</span><span class="res-val">${st.rateStr}</span></div>
-    <div class="res-row"><span class="res-label">Instrument</span><span class="res-val" style="color:${st.equity?'var(--green)':'var(--gold)'}">${st.equity?'Equity Funds':'Debt Instruments'}</span></div>
-    <div class="res-row"><span class="res-label">Monthly SIP</span><span class="res-val big">${sip<=0?'✅ On Track':'₹'+Math.round(sip).toLocaleString('en-IN')}</span></div>
+    <div class="res-row"><span class="res-label">Horizon</span><span class="res-val">${instrLabel} (${yrs} yrs)</span></div>
+    <div class="res-row"><span class="res-label">Return Rate</span><span class="res-val">${rateStr}</span></div>
+    <div class="res-row"><span class="res-label">Instrument</span><span class="res-val" style="color:${isAuto?(st.equity?'var(--green)':'var(--gold)'):'var(--purple)'}">${instrLabel}</span></div>
+    <div class="res-row"><span class="res-label">Monthly SIP${stepUp>0?' (start)':''}</span><span class="res-val big">${sip<=0?'✅ On Track':'₹'+Math.round(sip).toLocaleString('en-IN')}</span></div>
+    ${sip>0&&stepUp>0?`<div class="res-row"><span class="res-label">Without step-up</span><span class="res-val" style="color:var(--text2)">₹${Math.round(sipNoStepUp).toLocaleString('en-IN')}/mo</span></div>
+    <div class="res-row"><span class="res-label">Savings vs no step-up</span><span class="res-val" style="color:var(--green)">${((1-sip/sipNoStepUp)*100).toFixed(0)}% lower start</span></div>`:''}
     ${sip>0?`<div class="res-row"><span class="res-label">Total Invested</span><span class="res-val">${fmt(totalInv)}</span></div>
     <div class="res-row"><span class="res-label">Wealth Created</span><span class="res-val" style="color:var(--green)">${fmt(wealth)}</span></div>`:''}
-    <div class="res-note">${st.instr.join(' · ')}${!st.equity?'<br>No equity — goal is within 10 years.':''}</div>
+    ${horizonWarn?`<div class="warn-note">${horizonWarn}</div>`:''}
+    <div class="res-note">${isAuto?st.instr.join(' · '):instrLabel}${isAuto&&!st.equity?'<br>No equity — goal is within 10 years.':''}</div>
   `;
-  if(sip>0){cw.style.display='block';drawCalcChart(tgt,sav,yrs,sip,st.rate);}
+  if(sip>0){cw.style.display='block';drawCalcChart(tgt,sav,yrs,sip,rate,stepUp);}
   else cw.style.display='none';
 }
 
-function drawCalcChart(target,savings,years,monthSIP,annRate){
+function drawCalcChart(target,savings,years,monthSIP,annRate,stepUpRate){
   const pts=Math.min(10,Math.round(years)), labels=[],inv=[],corpus=[];
+  const stepUp = stepUpRate || 0;
   for(let i=1;i<=pts;i++){
     const y=(years/pts)*i, n=Math.round(y*12), r=annRate/12;
-    const fvSIP=monthSIP*(Math.pow(1+r,n)-1)/r*(1+r);
+    // Calculate corpus with step-up
+    let fvSIP = 0;
+    if (stepUp > 0) {
+      for (let k = 0; k < Math.ceil(y); k++) {
+        const yearSIP = monthSIP * Math.pow(1 + stepUp, k);
+        const monthsInYear = (k < Math.floor(y)) ? 12 : Math.round((y - Math.floor(y)) * 12);
+        if (monthsInYear <= 0) continue;
+        for (let m = 0; m < monthsInYear; m++) {
+          const monthIdx = k * 12 + m;
+          if (monthIdx >= n) break;
+          fvSIP += yearSIP * Math.pow(1 + r, n - monthIdx);
+        }
+      }
+    } else {
+      fvSIP = monthSIP * (Math.pow(1+r,n)-1)/r*(1+r);
+    }
     const fvSav=savings*Math.pow(1+annRate,y);
     labels.push('Yr '+Math.round(y));
-    inv.push(parseFloat(((monthSIP*n+savings)/1e5).toFixed(2)));
+    // Total invested with step-up
+    let totalInvested = savings;
+    for (let k = 0; k < Math.ceil(y); k++) {
+      const yearSIP = monthSIP * Math.pow(1 + stepUp, k);
+      const monthsInYear = (k < Math.floor(y)) ? 12 : Math.round((y - Math.floor(y)) * 12);
+      totalInvested += yearSIP * monthsInYear;
+    }
+    inv.push(parseFloat((totalInvested/1e5).toFixed(2)));
     corpus.push(parseFloat(((fvSIP+fvSav)/1e5).toFixed(2)));
   }
   const ctx=document.getElementById('c-chart').getContext('2d');
@@ -867,8 +1937,8 @@ function drawCalcChart(target,savings,years,monthSIP,annRate){
 
 // ── UTILS ──────────────────────────────────────────────────────────────────
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
-function save(){try{localStorage.setItem('fingoal_v7',JSON.stringify(goals));}catch(_){}}
-function load(){try{const d=localStorage.getItem('fingoal_v7');if(d)goals=JSON.parse(d);}catch(_){}}
+function save(){try{localStorage.setItem('fingoal_v8',JSON.stringify(goals));}catch(_){}}
+function load(){try{const d=localStorage.getItem('fingoal_v8');if(d)goals=JSON.parse(d);}catch(_){}}
 
 // ── SEED ───────────────────────────────────────────────────────────────────
 function seed(){
@@ -877,9 +1947,12 @@ function seed(){
 }
 
 // ── INIT ───────────────────────────────────────────────────────────────────
+loadFamilyProfile();
 load();
 if(!goals.length) seed();
 render();
+updateProfileHeader();
+if (!familyProfile) { openOnboarding(false); }
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 </script>
 </body>
